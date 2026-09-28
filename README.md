@@ -6,6 +6,44 @@ EduTrack is an institutional analytics and student management platform featuring
 
 ---
 
+## 🛠️ Setup
+
+Quickstart for a fresh clone. Full detail is in [How to Run](#-how-to-run) and [Database Configuration](#-database-configuration) below.
+
+**1. Create the database and import the schema + seed**
+
+```bash
+mysql -u root < database/schema.sql            # creates the `edutrack` database and its tables
+mysql -u root edutrack < database/seed.sql     # sample students, subjects, marks, attendance
+```
+
+Or import both through phpMyAdmin. `./start.sh` (step 4) does this automatically on first run.
+
+**2. Apply the migrations** (idempotent; safe to re-run)
+
+```bash
+mysql -u root edutrack < database/migration_attendance.sql
+mysql -u root edutrack < database/migration_student_profile.sql
+```
+
+**3. Create your local config**
+
+```bash
+cp api/config.local.example.php api/config.local.php
+```
+
+Then edit `api/config.local.php` and fill in your own `host` / `port` / `name` / `user` / `pass`. The example file ships with placeholders only - `config.local.php` is git-ignored and must never be committed.
+
+**4. Run it**
+
+```bash
+./start.sh
+```
+
+This initialises a local MariaDB on `127.0.0.1:3307`, imports the schema and seed if the `edutrack` database is empty, and serves the app at <http://127.0.0.1:8001/>. If you'd rather use an existing MySQL/MariaDB server or XAMPP, see [How to Run](#-how-to-run).
+
+---
+
 ## 📁 System Architecture
 
 ```text

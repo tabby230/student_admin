@@ -18,6 +18,17 @@ index.zip
 tmp/
 .cache/
 
+# --- Node ---
+node_modules/
+
+# --- Logs ---
+*.log
+
+# --- Student uploads are runtime data, not source ---
+# Keep the folder itself in git so a fresh clone has a place to write.
+assets/uploads/students/*
+!assets/uploads/students/.gitkeep
+
 # --- OS / editor junk ---
 .DS_Store
 Thumbs.db

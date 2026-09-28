@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departments - NEX College of Arts and Science</title>
+  <meta name="description" content="Explore and monitor academic departments and their performance.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link active">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search departments, faculties...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="user-profile-nav" title="Admin profile">
+        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <div class="user-details-nav">
+          <span class="user-name">Aravindh</span>
+          <span class="user-role">Admin</span>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Layout with Sidebar -->
+  <div class="app-layout">
+    <div class="sidebar-col">
+      <aside class="sidebar glass-panel">
+      <div class="sidebar-menu">
+        <a href="index.html" class="sidebar-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Home</span>
+        </a>
+        <a href="students.html" class="sidebar-item">
+          <i data-lucide="users" style="width:18px;height:18px;"></i>
+          <span>Students</span>
+        </a>
+        <a href="attendance.html" class="sidebar-item">
+          <i data-lucide="clipboard-check" style="width:18px;height:18px;"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="departments.html" class="sidebar-item active">
+          <i data-lucide="landmark" style="width:18px;height:18px;"></i>
+          <span>Departments</span>
+        </a>
+        <a href="results.html" class="sidebar-item">
+          <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+          <span>Results</span>
+        </a>
+        <a href="analytics.html" class="sidebar-item">
+          <i data-lucide="line-chart" style="width:18px;height:18px;"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+
+      <div class="sidebar-promo-card">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="graduation-cap" style="width:20px;height:20px;color:#38bdf8;"></i>
+          <h4>Better Students Brighter Futures</h4>
+        </div>
+        <p>Education is not just about learning, it's about building a better tomorrow.</p>
+        <div class="promo-accent-bar"></div>
+      </div>
+    </aside>
+
+      <!-- Rotating 3D Moon Widget -->
+      <div class="moon-widget" id="moonWidget" data-moon-src="assets/3dmodel/moon.glb">
+        <div class="moon-widget-loader">
+          <div class="moon-widget-spinner"></div>
+        </div>
+        <div class="moon-widget-fallback" hidden>
+          <span class="moon-widget-orb"></span>
+        </div>
+        <div class="moon-widget-hint">Drag to rotate</div>
+      </div>
+    </div>
+
+    <main class="content-area">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 4px; text-shadow: 0 1px 6px rgba(0,0,0,0.45);">Academic Departments</h1>
+        <p style="color: rgba(255,255,255,0.92); font-size: 0.9rem; font-weight: 500; text-shadow: 0 1px 6px rgba(0,0,0,0.45);">Overview of all 14 educational faculties, student capacities, and scores.</p>
+      </div>
+
+      <!-- 14 Departments Grid -->
+      <div class="departments-grid" id="departmentsContainer">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="js/moon-widget.js"></script>
+  <script>
+    const DeptTint = {
+      "Computer Science": "#7dd3fc",
+      "Electronics": "#e9d5ff",
+      "Mechanical": "#fed7aa",
+      "Civil": "#99f6e4",
+      "AI & Data Science": "#bae6fd",
+      "Biotechnology": "#fbcfe8",
+      "Electrical": "#fde68a",
+      "Information Technology": "#c7d2fe",
+      "Mathematics": "#99f6e4",
+      "Physics": "#ddd6fe",
+      "Chemistry": "#6ee7b7",
+      "Commerce": "#fde68a"
+    };
+
+    const AccentTintFallback = {
+      "#38bdf8": "#7dd3fc",
+      "#22d3ee": "#99f6e4",
+      "#a855f7": "#e9d5ff",
+      "#8b5cf6": "#ddd6fe",
+      "#f97316": "#fed7aa",
+      "#f59e0b": "#fde68a",
+      "#06b6d4": "#99f6e4",
+      "#ec4899": "#fbcfe8",
+      "#f43f5e": "#fecaca",
+      "#eab308": "#fde68a",
+      "#6366f1": "#c7d2fe",
+      "#14b8a6": "#99f6e4",
+      "#10b981": "#6ee7b7"
+    };
+
+    function getDeptTint(d) {
+      return DeptTint[d.name] || AccentTintFallback[(d.color || '').toLowerCase()] || "#7dd3fc";
+    }
+
+    async function loadDepartments() {
+      const container = document.getElementById('departmentsContainer');
+      try {
+        const depts = await API.getDepartments();
+        container.innerHTML = depts.map(d => {
+          const sparklineSvg = createSparklineSvg(d.sparkline, d.color, 90, 26);
+          return `
+            <div class="glass-panel dept-card">
+              <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                  <div style="width:48px; height:48px; border-radius:14px; background:${d.bgColor}; border:1px solid ${d.borderColor}; display:flex; align-items:center; justify-content:center; color:${getDeptTint(d)};">
+                    <i data-lucide="${d.icon}" style="width:24px;height:24px;"></i>
+                  </div>
+                  <span class="dept-tag" style="background:${d.bgColor}; color:${getDeptTint(d)}; font-weight:600; font-size:0.75rem;">
+                    Code: ${d.code}
+                  </span>
+                </div>
+
+                <h3 style="font-size:1.15rem; font-weight:700; color:#fff; margin-bottom:4px; text-shadow:0 1px 6px rgba(0,0,0,0.45);">${d.name}</h3>
+                <div style="font-size:0.78rem; color:rgba(255,255,255,0.85); font-weight:500; margin-bottom:16px; text-shadow:0 1px 6px rgba(0,0,0,0.45);">Head: <span style="color:#ffffff; font-weight:600;">${d.hod}</span></div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; background:rgba(0,0,0,0.25); padding:12px; border-radius:12px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:rgba(255,255,255,0.90); font-weight:500; display:block;">Enrolled</span>
+                    <strong style="font-size:1.1rem; color:#fff; font-weight:700; text-shadow:0 1px 6px rgba(0,0,0,0.45);">${d.studentCount} Students</strong>
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:rgba(255,255,255,0.90); font-weight:500; display:block;">Average Score</span>
+                    <strong style="font-size:1.1rem; color:${getDeptTint(d)}; font-weight:700; text-shadow:0 1px 6px rgba(0,0,0,0.45);">${d.averageScore}%</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <span style="font-size:0.75rem; color:rgba(255,255,255,0.90); font-weight:500; text-shadow:0 1px 6px rgba(0,0,0,0.45);">Semester Trend</span>
+                  ${sparklineSvg}
+                </div>
+
+                <a href="students.html?dept=${encodeURIComponent(d.name)}" class="card-action-link" style="padding-top:12px;">
+                  <span>View Students</span>
+                  <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (window.lucide) lucide.createIcons();
+      } catch (e) {
+        console.error("Error rendering departments:", e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDepartments);
+  </script>
+</body>
+</html>

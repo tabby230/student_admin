@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile - NEX College of Arts and Science</title>
+  <meta name="description" content="Complete student profile: personal details, academics, attendance, results and documents.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/student-profile.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link active">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search students, departments, or anything...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="admin-dropdown-wrap">
+        <div class="user-profile-nav" id="adminPill" title="Admin profile">
+          <img src="assets/images/avatar-rithik.png" alt="Admin Avatar" onerror="this.src='assets/images/avatar-rithik.png'">
+          <div class="user-details-nav">
+            <span class="user-name">Admin</span>
+            <span class="user-role">Administrator</span>
+          </div>
+          <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+        </div>
+        <div class="admin-dropdown" id="adminDropdown">
+          <a href="index.html"><i data-lucide="user" style="width:15px;height:15px;"></i> My Profile</a>
+          <a href="index.html"><i data-lucide="settings" style="width:15px;height:15px;"></i> Settings</a>
+          <a href="index.html"><i data-lucide="log-out" style="width:15px;height:15px;"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Layout with Sidebar -->
+  <div class="app-layout">
+    <aside class="sidebar glass-panel">
+      <div class="sidebar-menu">
+        <a href="index.html" class="sidebar-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Home</span>
+        </a>
+        <a href="students.html" class="sidebar-item active">
+          <i data-lucide="users" style="width:18px;height:18px;"></i>
+          <span>Students</span>
+        </a>
+        <a href="attendance.html" class="sidebar-item">
+          <i data-lucide="clipboard-check" style="width:18px;height:18px;"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="departments.html" class="sidebar-item">
+          <i data-lucide="landmark" style="width:18px;height:18px;"></i>
+          <span>Departments</span>
+        </a>
+        <a href="results.html" class="sidebar-item">
+          <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+          <span>Results</span>
+        </a>
+        <a href="analytics.html" class="sidebar-item">
+          <i data-lucide="line-chart" style="width:18px;height:18px;"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+
+      <div class="sidebar-promo-card">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="graduation-cap" style="width:20px;height:20px;color:#38bdf8;"></i>
+          <h4>Better Students Brighter Futures</h4>
+        </div>
+        <p>Education is not just about learning, it's about building a better tomorrow.</p>
+        <div class="promo-accent-bar"></div>
+      </div>
+    </aside>
+
+    <main class="content-area">
+      <a class="back-link" href="javascript:void(0);" id="backLink">
+        <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>
+        <span>Back to Students</span>
+      </a>
+
+      <!-- Rendered by js/student-profile.js -->
+      <div id="profileRoot" class="profile-layout">
+        <!-- Loading skeleton shown while fetching -->
+        <div id="profileSkeleton">
+          <div class="profile-side">
+            <div class="glass-panel sk-card">
+              <div class="skeleton-block sk-avatar"></div>
+              <div class="skeleton-block sk-line" style="width:60%; margin:0 auto 10px auto;"></div>
+              <div class="skeleton-block sk-line" style="width:40%; margin:0 auto 16px auto;"></div>
+              <div class="skeleton-block sk-line" style="height:22px; width:55%; margin:0 auto;"></div>
+            </div>
+            <div class="glass-panel sk-card">
+              <div class="skeleton-block sk-line" style="margin-bottom:12px;"></div>
+              <div class="skeleton-block sk-line" style="margin-bottom:12px; width:80%;"></div>
+              <div class="skeleton-block sk-line" style="width:60%; margin-bottom:16px;"></div>
+              <div class="skeleton-block sk-line" style="height:22px; width:100%;"></div>
+            </div>
+          </div>
+          <div class="glass-panel sk-card">
+            <div class="skeleton-block sk-line" style="height:42px; margin-bottom:18px;"></div>
+            <div class="skeleton-block sk-line" style="margin-bottom:12px;"></div>
+            <div class="skeleton-block sk-line" style="margin-bottom:12px; width:92%;"></div>
+            <div class="skeleton-block sk-line" style="margin-bottom:12px; width:85%;"></div>
+            <div class="skeleton-block sk-line" style="width:70%;"></div>
+          </div>
+        </div>
+
+        <!-- Error state -->
+        <div id="profileError" class="glass-panel error-state" style="grid-column:1/-1; display:none;">
+          <i data-lucide="user-x" style="width:46px;height:46px;color:#fca5a5;margin-bottom:12px;"></i>
+          <h2 id="errorTitle">Unable to load profile</h2>
+          <p id="errorMessage">Please try again.</p>
+          <button class="btn-primary" id="retryBtn" style="cursor:pointer;">
+            <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Retry
+          </button>
+        </div>
+
+        <!-- Main rendered profile -->
+        <div id="profileContent" style="display:none;">
+          <!-- left column + right column injected here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hidden file input for photo upload -->
+  <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Edit modal overlay (filled by JS) -->
+  <div class="modal-overlay" id="editModal" style="display:none;"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/student-profile.js"></script>
+</body>
+</html>

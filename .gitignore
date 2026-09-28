@@ -1,0 +1,27 @@
+# --- Secrets: real DB credentials live here, never commit ---
+api/config.local.php
+config.local.php
+*.local.php
+.env
+.env.*
+
+# --- Dev diagnostics: print DB host/user/port and password length ---
+_diag.php
+_diag.txt
+
+# --- Build/deploy artifacts ---
+index.zip
+*.zip
+*.tar.gz
+
+# --- Runtime caches ---
+tmp/
+.cache/
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students Directory - NEX College of Arts and Science</title>
+  <meta name="description" content="Manage and view all student records in your institution.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link active">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search students, departments, or anything...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="user-profile-nav" title="Admin profile">
+        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <div class="user-details-nav">
+          <span class="user-name">Aravindh</span>
+          <span class="user-role">Admin</span>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- App Layout with Sidebar -->
+  <div class="app-layout">
+    <!-- Left Glass Sidebar -->
+    <div class="sidebar-col">
+      <aside class="sidebar glass-panel">
+      <div class="sidebar-menu">
+        <a href="index.html" class="sidebar-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Home</span>
+        </a>
+        <a href="students.html" class="sidebar-item active">
+          <i data-lucide="users" style="width:18px;height:18px;"></i>
+          <span>Students</span>
+        </a>
+        <a href="attendance.html" class="sidebar-item">
+          <i data-lucide="clipboard-check" style="width:18px;height:18px;"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="departments.html" class="sidebar-item">
+          <i data-lucide="landmark" style="width:18px;height:18px;"></i>
+          <span>Departments</span>
+        </a>
+        <a href="results.html" class="sidebar-item">
+          <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+          <span>Results</span>
+        </a>
+        <a href="analytics.html" class="sidebar-item">
+          <i data-lucide="line-chart" style="width:18px;height:18px;"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+
+      <!-- Bottom Promo Glass Card -->
+      <div class="sidebar-promo-card">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="graduation-cap" style="width:20px;height:20px;color:#38bdf8;"></i>
+          <h4>Better Students Brighter Futures</h4>
+        </div>
+        <p>Education is not just about learning, it's about building a better tomorrow.</p>
+        <div class="promo-accent-bar"></div>
+      </div>
+    </aside>
+
+      <!-- Rotating 3D Moon Widget -->
+      <div class="moon-widget" id="moonWidget" data-moon-src="assets/3dmodel/moon.glb">
+        <div class="moon-widget-loader">
+          <div class="moon-widget-spinner"></div>
+        </div>
+        <div class="moon-widget-fallback" hidden>
+          <span class="moon-widget-orb"></span>
+        </div>
+        <div class="moon-widget-hint">Drag to rotate</div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Page Header -->
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Students</h1>
+        <p style="color: rgba(255,255,255,0.92); font-size: 0.9rem; font-weight: 500;">Manage and view all student records in your institution.</p>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="filter-bar">
+        <!-- Search Input -->
+        <div class="search-input-group">
+          <i data-lucide="search" class="icon" style="width:18px;height:18px;"></i>
+          <input type="text" id="studentSearch" placeholder="Search by name, roll number, or department...">
+        </div>
+
+        <!-- Department Filter -->
+        <select id="filterDept" class="select-filter" title="Filter by Department">
+          <option value="All">Department: All Departments</option>
+        </select>
+
+        <!-- Year Filter -->
+        <select id="filterYear" class="select-filter" title="Filter by Year">
+          <option value="All">Year: All Years</option>
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+        </select>
+
+        <!-- Semester Filter -->
+        <select id="filterSemester" class="select-filter" title="Filter by Semester">
+          <option value="All">Semester: All Semesters</option>
+        </select>
+
+        <!-- Add Student Button -->
+        <button id="btnAddStudent" class="btn-primary" style="padding:8px 14px; font-size:0.85rem; border-radius:10px; display:inline-flex; align-items:center; gap:6px; font-weight:700; cursor:pointer;" title="Add a new student" onclick="openStudentFormModal(0)">
+          <i data-lucide="user-plus" style="width:16px;height:16px;"></i>
+          <span>Add Student</span>
+        </button>
+
+        <!-- Import CSV Button & Hidden Input -->
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
+        <button id="btnImportStudents" class="btn-primary" style="padding:8px 14px; font-size:0.85rem; border-radius:10px; display:inline-flex; align-items:center; gap:6px; font-weight:700; cursor:pointer;" title="Import students via CSV">
+          <i data-lucide="upload" style="width:16px;height:16px;"></i>
+          <span>Import CSV</span>
+        </button>
+
+        <!-- Grid/List View Toggle -->
+        <div class="view-toggle-btns">
+          <button class="btn-toggle-view active" id="btnGridView" title="Grid View">
+            <i data-lucide="layout-grid" style="width:18px;height:18px;"></i>
+          </button>
+          <button class="btn-toggle-view" id="btnListView" title="List View">
+            <i data-lucide="list" style="width:18px;height:18px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Students 4-Column Card Grid Container -->
+      <div id="studentsContainer" class="students-grid">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+      <!-- Pagination and Page Size Footer -->
+      <div class="pagination-container">
+        <div id="paginationInfo">Showing 1 - 12 of 124 students</div>
+
+        <div class="pagination-controls" id="paginationControls">
+          <!-- Dynamic pagination buttons -->
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>Items per page:</span>
+          <select id="itemsPerPage" class="select-filter" style="padding:6px 28px 6px 12px; background-position:right 10px center;">
+            <option value="12" selected>12</option>
+            <option value="24">24</option>
+            <option value="48">48</option>
+          </select>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="js/moon-widget.js"></script>
+  <script>
+    let currentStudents = [];
+    let currentPage = 1;
+    let itemsPerPage = 12;
+    let isGridView = true;
+
+    async function loadStudents() {
+      const search = document.getElementById('studentSearch').value;
+      const dept = document.getElementById('filterDept').value;
+      const year = document.getElementById('filterYear').value;
+      const semester = document.getElementById('filterSemester').value;
+
+      try {
+        currentStudents = await API.getStudents({ search, dept, year, semester });
+        currentPage = 1;
+        renderStudents();
+      } catch (err) {
+        console.error("Error loading students:", err);
+      }
+    }
+
+    function renderStudents() {
+      const container = document.getElementById('studentsContainer');
+      const total = currentStudents.length;
+
+      const totalPages = Math.ceil(total / itemsPerPage) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIdx = (currentPage - 1) * itemsPerPage;
+      const endIdx = Math.min(startIdx + itemsPerPage, total);
+      const pageData = currentStudents.slice(startIdx, endIdx);
+
+      // Update Pagination Info
+      document.getElementById('paginationInfo').textContent =
+        total > 0 ? `Showing ${startIdx + 1} - ${endIdx} of ${total} students` : 'No students found';
+
+      if (pageData.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 48px; text-align: center; color: rgba(255,255,255,0.90);" class="glass-panel">
+            <i data-lucide="user-x" style="width:48px;height:48px;margin-bottom:12px;color:#64748b;"></i>
+            <h3>No students found</h3>
+            <p style="font-size:0.85rem;margin-top:6px;">Try adjusting your search criteria or filters.</p>
+          </div>
+        `;
+        renderPaginationButtons(totalPages);
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      if (isGridView) {
+        container.className = 'students-grid';
+        container.innerHTML = pageData.map(st => {
+          const deptStyle = getDeptStyle(st.dept);
+          const attSvg = createProgressRingSvg(st.attendance, '#10b981', 16, 3);
+
+          return `
+            <div class="glass-panel student-card">
+              <div class="student-card-header">
+                <div class="student-avatar-icon">
+                  <i data-lucide="user" style="width:24px;height:24px;"></i>
+                  ${st.avatar ? `<img src="${st.avatar}" alt="${st.name}" class="student-avatar-img" loading="lazy" onerror="this.remove();">` : ``}
+                </div>
+                <div class="student-info">
+                  <h4>${st.name}</h4>
+                  <div class="roll-no">Roll No: ${st.rollNo}</div>
+                  <span class="dept-tag" style="${getDeptTagStyle(st.dept)}">
+                    <i data-lucide="${deptStyle.icon}" style="width:12px;height:12px;"></i>
+                    <span>${st.dept}</span>
+                  </span>
+                </div>
+                <button class="card-options-btn" onclick="openStudentModal(${JSON.stringify(st).replace(/"/g, '&quot;')})" title="Options">
+                  <i data-lucide="more-vertical" style="width:16px;height:16px;"></i>
+                </button>
+              </div>
+
+              <div class="student-stats-row">
+                <div class="attendance-mini">
+                  ${attSvg}
+                  <div>
+                    <div style="font-size:0.8rem; font-weight:700; color:#fff;">${st.attendance}%</div>
+                    <div style="font-size:0.65rem; color:rgba(255,255,255,0.90); font-weight:500;">Attendance</div>
+                  </div>
+                </div>
+
+                <div class="marks-badge-mini">
+                  <i data-lucide="star" style="width:12px;height:12px;"></i>
+                  <span>${st.marks}%</span>
+                </div>
+              </div>
+
+              <a href="student-profile.html?id=${st.id}" class="card-action-link">
+                <span>View Details</span>
+                <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+              </a>
+            </div>
+          `;
+        }).join('');
+      } else {
+        // List View Table
+        container.className = 'table-responsive glass-panel';
+        container.innerHTML = `
+          <table class="glass-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Roll No</th>
+                <th>Department</th>
+                <th>Year / Sem</th>
+                <th>Attendance</th>
+                <th>Marks</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pageData.map(st => {
+                const deptStyle = getDeptStyle(st.dept);
+                return `
+                  <tr>
+                    <td>
+                      <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="student-avatar-icon" style="width:34px;height:34px;">
+                          <i data-lucide="user" style="width:18px;height:18px;"></i>
+                          ${st.avatar ? `<img src="${st.avatar}" alt="${st.name}" class="student-avatar-img" loading="lazy" onerror="this.remove();">` : ``}
+                        </div>
+                        <span style="font-weight:700; color:#fff;">${st.name}</span>
+                      </div>
+                    </td>
+                    <td><code>${st.rollNo}</code></td>
+                    <td>
+                      <span class="dept-tag" style="${getDeptTagStyle(st.dept)}">
+                        ${st.dept}
+                      </span>
+                    </td>
+                    <td>Year ${st.year || 3}, Sem ${st.semester || 6}</td>
+                    <td><strong style="color:#fff;">${st.attendance}%</strong></td>
+                    <td><span class="marks-badge-mini">${st.marks}%</span></td>
+                    <td>
+                      <a href="student-profile.html?id=${st.id}" class="card-action-link" style="border:none; padding:0; display:inline-flex;">
+                        <span>View</span>
+                        <i data-lucide="arrow-right" style="width:12px;height:12px;"></i>
+                      </a>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      renderPaginationButtons(totalPages);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderPaginationButtons(totalPages) {
+      const controls = document.getElementById('paginationControls');
+      let html = `
+        <button class="page-btn" ${currentPage === 1 ? 'disabled style="opacity:0.4;cursor:default;"' : ''} onclick="changePage(${currentPage - 1})">
+          <i data-lucide="chevron-left" style="width:14px;height:14px;"></i>
+        </button>
+      `;
+
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+          html += `
+            <button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="changePage(${p})">
+              ${p}
+            </button>
+          `;
+        } else if (p === currentPage - 2 || p === currentPage + 2) {
+          html += `<span style="padding: 0 4px; color:rgba(255,255,255,0.80);">...</span>`;
+        }
+      }
+
+      html += `
+        <button class="page-btn" ${currentPage === totalPages ? 'disabled style="opacity:0.4;cursor:default;"' : ''} onclick="changePage(${currentPage + 1})">
+          <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </button>
+      `;
+
+      controls.innerHTML = html;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      renderStudents();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check for URL search param
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('search')) {
+        document.getElementById('studentSearch').value = urlParams.get('search');
+      }
+
+      // Populate the department and semester filters from the database so the
+      // lists can never drift out of sync with the real reference data. Awaited
+      // because the ?dept= preselect below needs the real option list.
+      await populateReferenceFilters();
+
+      // Pre-select department from URL (e.g. ?dept=Computer%20Science) and load filtered
+      if (urlParams.has('dept')) {
+        const deptParam = urlParams.get('dept');
+        const deptSelect = document.getElementById('filterDept');
+        const hasOption = Array.from(deptSelect.options).some(o => o.value === deptParam);
+        deptSelect.value = hasOption ? deptParam : 'All';
+      }
+
+      loadStudents();
+
+      // Listeners
+      document.getElementById('studentSearch').addEventListener('input', loadStudents);
+      document.getElementById('filterDept').addEventListener('change', loadStudents);
+      document.getElementById('filterYear').addEventListener('change', loadStudents);
+      document.getElementById('filterSemester').addEventListener('change', loadStudents);
+
+      document.getElementById('itemsPerPage').addEventListener('change', (e) => {
+        itemsPerPage = parseInt(e.target.value, 10);
+        currentPage = 1;
+        renderStudents();
+      });
+
+      document.getElementById('btnGridView').addEventListener('click', () => {
+        isGridView = true;
+        document.getElementById('btnGridView').classList.add('active');
+        document.getElementById('btnListView').classList.remove('active');
+        renderStudents();
+      });
+
+      document.getElementById('btnListView').addEventListener('click', () => {
+        isGridView = false;
+        document.getElementById('btnListView').classList.add('active');
+        document.getElementById('btnGridView').classList.remove('active');
+        renderStudents();
+      });
+
+      // CSV Import handlers
+      const fileInput = document.getElementById('csvFileInput');
+      document.getElementById('btnImportStudents').addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const originalBtnText = document.getElementById('btnImportStudents').innerHTML;
+        document.getElementById('btnImportStudents').innerHTML = `<i data-lucide="loader-2" class="spin" style="width:16px;height:16px;"></i> Uploading...`;
+        if (window.lucide) lucide.createIcons();
+
+        try {
+          const res = await API.importStudents(file);
+          alert(res.message || 'Students imported successfully!');
+          await loadStudents();
+        } catch (err) {
+          alert('Import failed: ' + (err.message || 'Unknown error'));
+        } finally {
+          document.getElementById('btnImportStudents').innerHTML = originalBtnText;
+          if (window.lucide) lucide.createIcons();
+          fileInput.value = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

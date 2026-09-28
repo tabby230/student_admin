@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Institution Analytics - NEX College of Arts and Science</title>
+  <meta name="description" content="Interactive visual analytics with zoom & pan, department rankings, and pass trends.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js and chartjs-plugin-zoom with hammerjs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link active">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search analytics...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="user-profile-nav" title="Admin profile">
+        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <div class="user-details-nav">
+          <span class="user-name">Aravindh</span>
+          <span class="user-role">Admin</span>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Layout with Sidebar -->
+  <div class="app-layout">
+    <div class="sidebar-col">
+      <aside class="sidebar glass-panel">
+      <div class="sidebar-menu">
+        <a href="index.html" class="sidebar-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Home</span>
+        </a>
+        <a href="students.html" class="sidebar-item">
+          <i data-lucide="users" style="width:18px;height:18px;"></i>
+          <span>Students</span>
+        </a>
+        <a href="attendance.html" class="sidebar-item">
+          <i data-lucide="clipboard-check" style="width:18px;height:18px;"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="departments.html" class="sidebar-item">
+          <i data-lucide="landmark" style="width:18px;height:18px;"></i>
+          <span>Departments</span>
+        </a>
+        <a href="results.html" class="sidebar-item">
+          <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+          <span>Results</span>
+        </a>
+        <a href="analytics.html" class="sidebar-item active">
+          <i data-lucide="line-chart" style="width:18px;height:18px;"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+
+      <div class="sidebar-promo-card">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="graduation-cap" style="width:20px;height:20px;color:#38bdf8;"></i>
+          <h4>Better Students Brighter Futures</h4>
+        </div>
+        <p>Education is not just about learning, it's about building a better tomorrow.</p>
+        <div class="promo-accent-bar"></div>
+      </div>
+    </aside>
+
+      <!-- Rotating 3D Moon Widget -->
+      <div class="moon-widget" id="moonWidget" data-moon-src="assets/3dmodel/moon.glb">
+        <div class="moon-widget-loader">
+          <div class="moon-widget-spinner"></div>
+        </div>
+        <div class="moon-widget-fallback" hidden>
+          <span class="moon-widget-orb"></span>
+        </div>
+        <div class="moon-widget-hint">Drag to rotate</div>
+      </div>
+    </div>
+
+    <main class="content-area">
+      <!-- Title & Live Filters -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; text-shadow: var(--text-shadow-glass);">Institutional Analytics</h1>
+          <p style="color: var(--text-secondary); font-weight: 500; font-size: 0.9rem; text-shadow: var(--text-shadow-glass);">Interactive trends, semester trajectory, and faculty comparisons.</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <select id="analyticsDeptFilter" class="select-filter" title="Department">
+          <option value="All">Department: All Departments</option>
+        </select>
+
+          <select id="analyticsYearFilter" class="select-filter" title="Year">
+            <option value="All">All Years</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+
+          <button id="btnResetZoom" class="btn-secondary" style="padding:8px 14px; font-size:0.8rem; border-radius:12px;">
+            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
+            <span>Reset Zoom</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Chart 1: Interactive Zoomable Trendline -->
+      <div class="glass-panel" style="padding:24px; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); text-shadow:var(--text-shadow-glass);">Attendance Trajectory (Monthly, from recorded sessions)</h3>
+            <span style="font-size:0.75rem; color:rgba(255,255,255,0.88); font-weight:500; text-shadow:var(--text-shadow-glass);">Use mouse wheel or drag to zoom / pan across the timeline</span>
+          </div>
+          <div style="display:flex; gap:16px; font-size:0.78rem;">
+            <span style="color:#7dd3fc; font-weight:600; display:flex; align-items:center; gap:6px; text-shadow: var(--text-shadow-glass);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#38bdf8;"></span> Avg Attendance %
+            </span>
+            <span style="color:#6ee7b7; font-weight:600; display:flex; align-items:center; gap:6px; text-shadow: var(--text-shadow-glass);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#10b981;"></span> Present Rate %
+            </span>
+          </div>
+        </div>
+
+        <div style="height:320px; position:relative;">
+          <canvas id="zoomableLineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Two-column Subcharts: Bar Chart & Donut Chart -->
+      <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:24px;">
+        <!-- Department Bar Chart -->
+        <div class="glass-panel" style="padding:22px;">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:16px; color:var(--text-primary); display:flex; align-items:center; gap:8px; text-shadow:var(--text-shadow-glass);">
+            <i data-lucide="bar-chart-3" style="width:18px;height:18px;color:#7dd3fc;"></i>
+            Department Average Score Comparison
+          </h3>
+          <div style="height:250px; position:relative;">
+            <canvas id="deptBarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Grade Donut Chart -->
+        <div class="glass-panel" style="padding:22px;">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:16px; color:var(--text-primary); display:flex; align-items:center; gap:8px; text-shadow:var(--text-shadow-glass);">
+            <i data-lucide="pie-chart" style="width:18px;height:18px;color:#d8b4fe;"></i>
+            Pass vs. Distinction Cohort
+          </h3>
+          <div style="height:250px; position:relative;">
+            <canvas id="analyticsDonutChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="js/moon-widget.js"></script>
+  <script>
+    // Global Chart.js defaults — transparent canvas, bright white text
+    Chart.defaults.color = 'rgba(255,255,255,0.92)';
+    Chart.defaults.backgroundColor = 'transparent';
+    Chart.defaults.font.family = 'Poppins';
+    Chart.defaults.font.weight = 500;
+    Chart.defaults.plugins.tooltip.titleColor = '#ffffff';
+    Chart.defaults.plugins.tooltip.bodyColor = '#ffffff';
+
+    let lineChart, barChart, donutChart;
+
+    async function initAnalytics() {
+      try {
+        const analyticsData = await API.getAnalytics();
+        const depts = await API.getDepartments();
+
+        // 1. Zoomable Line Chart
+        const lineCtx = document.getElementById('zoomableLineChart').getContext('2d');
+        lineChart = new Chart(lineCtx, {
+          type: 'line',
+          data: {
+            labels: analyticsData.monthlyTrends.labels,
+            datasets: [
+              {
+                label: 'Avg Attendance %',
+                data: analyticsData.monthlyTrends.averages,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                borderWidth: 3,
+                tension: 0.35,
+                fill: true,
+                pointBackgroundColor: '#38bdf8',
+                pointRadius: 4
+              },
+              {
+                label: 'Present Rate %',
+                data: analyticsData.monthlyTrends.passRates,
+                borderColor: '#10b981',
+                backgroundColor: 'transparent',
+                borderWidth: 2.5,
+                borderDash: [5, 5],
+                tension: 0.35,
+                pointBackgroundColor: '#10b981',
+                pointRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                titleFont: { family: 'Poppins' },
+                bodyFont: { family: 'Poppins' }
+              },
+              zoom: {
+                zoom: {
+                  wheel: { enabled: true },
+                  pinch: { enabled: true },
+                  mode: 'x'
+                },
+                pan: {
+                  enabled: true,
+                  mode: 'x'
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255,255,255,0.08)' },
+                ticks: { color: 'rgba(255,255,255,0.92)', font: { family: 'Poppins', weight: 500 } }
+              },
+              y: {
+                min: 60,
+                max: 100,
+                grid: { color: 'rgba(255,255,255,0.08)' },
+                ticks: { color: 'rgba(255,255,255,0.92)', font: { family: 'Poppins', weight: 500 } }
+              }
+            }
+          }
+        });
+
+        // 2. Department Comparison Bar Chart
+        const barCtx = document.getElementById('deptBarChart').getContext('2d');
+        barChart = new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: depts.slice(0, 7).map(d => d.name.replace(' & Data Science', '').replace('Information Technology', 'IT')),
+            datasets: [{
+              label: 'Avg Score %',
+              data: depts.slice(0, 7).map(d => d.averageScore),
+              backgroundColor: [
+                '#38bdf8', '#a855f7', '#f97316', '#06b6d4', '#38bdf8', '#ec4899', '#eab308'
+              ],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff'
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: 'rgba(255,255,255,0.92)', font: { family: 'Poppins', size: 10, weight: 500 } }
+              },
+              y: {
+                min: 60,
+                max: 100,
+                grid: { color: 'rgba(255,255,255,0.08)' },
+                ticks: { color: 'rgba(255,255,255,0.92)', font: { family: 'Poppins', weight: 500 } }
+              }
+            }
+          }
+        });
+
+        // 3. Donut Chart
+        const donutCtx = document.getElementById('analyticsDonutChart').getContext('2d');
+        donutChart = new Chart(donutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: analyticsData.gradeDistribution.labels,
+            datasets: [{
+              data: analyticsData.gradeDistribution.counts,
+              backgroundColor: ['#10b981', '#38bdf8', '#a855f7', '#eab308', '#f97316'],
+              borderWidth: 2,
+              borderColor: '#0a1024'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: 'rgba(255,255,255,0.95)', font: { family: 'Poppins', size: 10, weight: 500 }, boxWidth: 10 }
+              },
+              tooltip: {
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff'
+              }
+            },
+            cutout: '65%'
+          }
+        });
+
+      } catch (err) {
+        console.error("Error setting up analytics charts:", err);
+      }
+    }
+
+    // Reset Zoom Handler
+    document.addEventListener('DOMContentLoaded', () => {
+      initAnalytics();
+
+      document.getElementById('btnResetZoom').addEventListener('click', () => {
+        if (lineChart) lineChart.resetZoom();
+      });
+
+      // Filter change: fetch real analytics from API
+      async function updateAnalyticsCharts() {
+        const dept = document.getElementById('analyticsDeptFilter').value;
+        const year = document.getElementById('analyticsYearFilter').value;
+        try {
+          const freshData = await API.getAnalytics({ dept, year });
+          if (lineChart && freshData.monthlyTrends) {
+            lineChart.data.labels = freshData.monthlyTrends.labels;
+            lineChart.data.datasets[0].data = freshData.monthlyTrends.averages;
+            lineChart.data.datasets[1].data = freshData.monthlyTrends.passRates;
+            lineChart.update();
+          }
+          if (donutChart && freshData.gradeDistribution) {
+            donutChart.data.labels = freshData.gradeDistribution.labels;
+            donutChart.data.datasets[0].data = freshData.gradeDistribution.counts;
+            donutChart.update();
+          }
+        } catch (e) {
+          console.error("Error refreshing analytics:", e);
+        }
+      }
+
+      document.getElementById('analyticsDeptFilter').addEventListener('change', updateAnalyticsCharts);
+      document.getElementById('analyticsYearFilter').addEventListener('change', updateAnalyticsCharts);
+    });
+  </script>
+</body>
+</html>

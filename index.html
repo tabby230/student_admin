@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEX College of Arts and Science - Empowering Education Through Data</title>
+  <meta name="description" content="Unlock the full potential of your students with powerful analytics, real-time insights and data-driven decisions.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .shooting-star-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    body > .home-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #f8fbff;
+      box-shadow: 0 0 5px rgba(191, 219, 254, 0.9), 0 0 12px rgba(96, 165, 250, 0.35);
+      opacity: 0;
+      transform: translate3d(0, 0, 0) rotate(135deg) translateX(0) scale(0.75);
+      animation: shootingStarFlight var(--star-duration) cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+    }
+
+    .shooting-star::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 1px;
+      width: var(--star-length);
+      height: 1px;
+      background: linear-gradient(90deg, rgba(224, 242, 255, 0) 0%, rgba(224, 242, 255, 0.88) 100%);
+      transform: translateY(-50%);
+      transform-origin: right center;
+    }
+
+    @keyframes shootingStarFlight {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(var(--star-angle)) translateX(0) scale(0.75);
+      }
+      12% {
+        opacity: 0.95;
+      }
+      72% {
+        opacity: 0.72;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(var(--star-angle)) translateX(var(--star-distance)) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shooting-star-layer {
+        display: none;
+      }
+    }
+  </style>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="shooting-star-layer" id="shootingStarLayer" aria-hidden="true"></div>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search students, departments, or anything...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="user-profile-nav" title="Admin profile">
+        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <div class="user-details-nav">
+          <span class="user-name">Aravindh</span>
+          <span class="user-role">Admin</span>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Hero & Dashboard Container -->
+  <main class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="accent-yellow">NEX</span> <span class="college-name">College of Arts and Science</span>
+        </h1>
+
+        <div class="hero-buttons">
+          <a href="results.html" class="btn-primary" id="btnViewResults">
+            <span>View Results</span>
+            <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+          </a>
+          <a href="analytics.html" class="btn-secondary" id="btnExploreAnalytics">
+            <i data-lucide="compass" style="width:16px;height:16px;"></i>
+            <span>Explore Analytics</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-image-wrap">
+        <!-- Recreated Hero Group cutout matching reference -->
+        <img src="assets/images/hero-students.png" alt="NEX College of Arts and Science Students" id="heroStudentsImg" onerror="this.onerror=null; this.src='assets/images/hero-students.jpg';">
+      </div>
+    </section>
+
+    <!-- 4 Live Stat Cards (Dynamically computed from mock data) -->
+    <section class="stats-grid" id="statsGrid">
+      <!-- 1. Total Students -->
+      <div class="glass-panel stat-card" id="cardTotalStudents">
+        <div class="stat-card-header">
+          <div class="stat-icon-box stat-icon-blue">
+            <i data-lucide="users" style="width:20px;height:20px;"></i>
+          </div>
+          <a href="students.html" class="stat-arrow-btn">
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value" id="valTotalStudents">--</div>
+        <div class="stat-footer">
+          <div class="stat-growth">
+            <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            <span id="growthStudents">+12%</span>
+            <span class="stat-subtitle">vs. last semester</span>
+          </div>
+          <div id="sparkStudents"></div>
+        </div>
+      </div>
+
+      <!-- 2. Departments -->
+      <div class="glass-panel stat-card" id="cardDepartments">
+        <div class="stat-card-header">
+          <div class="stat-icon-box stat-icon-teal">
+            <i data-lucide="landmark" style="width:20px;height:20px;"></i>
+          </div>
+          <a href="departments.html" class="stat-arrow-btn">
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+        <div class="stat-label">Departments</div>
+        <div class="stat-value" id="valDepartments">12</div>
+        <div class="stat-footer">
+          <div class="stat-growth">
+            <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            <span id="growthDepartments">+2%</span>
+            <span class="stat-subtitle">vs. last semester</span>
+          </div>
+          <div id="sparkDepartments"></div>
+        </div>
+      </div>
+
+      <!-- 3. Average Score -->
+      <div class="glass-panel stat-card" id="cardAvgScore">
+        <div class="stat-card-header">
+          <div class="stat-icon-box stat-icon-purple">
+            <i data-lucide="award" style="width:20px;height:20px;"></i>
+          </div>
+          <a href="analytics.html" class="stat-arrow-btn">
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+        <div class="stat-label">Average Score</div>
+        <div class="stat-value" id="valAvgScore">--</div>
+        <div class="stat-footer">
+          <div class="stat-growth">
+            <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            <span id="growthAvgScore">+5.2%</span>
+            <span class="stat-subtitle">vs. last semester</span>
+          </div>
+          <div id="sparkAvgScore"></div>
+        </div>
+      </div>
+
+      <!-- 4. Pass Rate -->
+      <div class="glass-panel stat-card" id="cardPassRate">
+        <div class="stat-card-header">
+          <div class="stat-icon-box stat-icon-orange">
+            <i data-lucide="shield-check" style="width:20px;height:20px;"></i>
+          </div>
+          <a href="results.html" class="stat-arrow-btn">
+            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+          </a>
+        </div>
+        <div class="stat-label">Pass Rate</div>
+        <div class="stat-value" id="valPassRate">--</div>
+        <div class="stat-footer">
+          <div class="stat-growth">
+            <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            <span id="growthPassRate">+2.6%</span>
+            <span class="stat-subtitle">vs. last semester</span>
+          </div>
+          <div id="sparkPassRate"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Performers Section -->
+    <section class="top-performers-section">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-title-row">
+            <i data-lucide="trophy" style="width:22px;height:22px;color:#eab308;"></i>
+            <h2 class="section-title">Top Performers</h2>
+          </div>
+          <p class="section-subtitle">The brightest minds, driving excellence.</p>
+        </div>
+        <a href="results.html" class="btn-view-all">
+          <span>View All</span>
+          <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </a>
+      </div>
+
+      <div class="performers-grid" id="performersGrid">
+        <!-- Rendered dynamically via JavaScript & API -->
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="edutrack-footer">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" style="width:22px;height:22px;">
+        <span style="font-weight:600; color:#fff;">NEX College of Arts and Science</span>
+      </div>
+
+      <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span>Empowering Education Through Data 💙</span>
+        <div class="footer-socials">
+          <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin" style="width:16px;height:16px;"></i></a>
+          <a href="#" aria-label="GitHub"><i data-lucide="github" style="width:16px;height:16px;"></i></a>
+          <a href="#" aria-label="Twitter"><i data-lucide="twitter" style="width:16px;height:16px;"></i></a>
+          <a href="#" aria-label="YouTube"><i data-lucide="youtube" style="width:16px;height:16px;"></i></a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/shooting-star.js"></script>
+  <script>
+    async function initHomePage() {
+      // 1. Fetch Dynamic Institution Stats
+      try {
+        const stats = await API.getStats();
+        document.getElementById('valTotalStudents').textContent = stats.totalStudents.toLocaleString();
+        document.getElementById('valDepartments').textContent = stats.totalDepartments;
+        document.getElementById('valAvgScore').textContent = stats.averageScore + '%';
+        document.getElementById('valPassRate').textContent = stats.passRate + '%';
+
+        // Render sparklines
+        document.getElementById('sparkStudents').innerHTML = createSparklineSvg([80, 85, 92, 105, 114, 120, 124], '#38bdf8', 75, 22);
+        document.getElementById('sparkDepartments').innerHTML = createSparklineSvg([9, 10, 11, 12, 13, 13, 14], '#10b981', 75, 22);
+        document.getElementById('sparkAvgScore').innerHTML = createSparklineSvg([72, 73, 75, 74, 76, 77, 78.6], '#a855f7', 75, 22);
+        document.getElementById('sparkPassRate').innerHTML = createSparklineSvg([91, 92, 93, 94, 95, 95.8, 96.2], '#f97316', 75, 22);
+      } catch (e) {
+        console.error("Failed to load stats:", e);
+      }
+
+      // 2. Fetch Top Performers
+      try {
+        const performers = await API.getTopPerformers();
+        const grid = document.getElementById('performersGrid');
+        grid.innerHTML = performers.map(p => {
+          const deptStyle = getDeptStyle(p.department);
+          const scoreNum = parseFloat(p.score) || 95;
+          const strokeColor = p.rank === 1 ? '#10b981' : (p.rank === 2 ? '#38bdf8' : '#a855f7');
+          const ringSvg = createProgressRingSvg(scoreNum, strokeColor, 28, 4);
+
+          return `
+            <div class="glass-panel performer-card">
+              <div class="performer-top-row">
+                <div class="performer-identity">
+                  <div class="performer-avatar-wrap">
+                    <img src="${p.avatar}" alt="${p.name}" class="performer-avatar" onerror="this.src='assets/images/avatar-rithik.png'">
+                    <span class="rank-pill rank-${p.rank}">${p.rank}</span>
+                  </div>
+                  <div class="performer-meta">
+                    <h3>${p.name}</h3>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <span class="dept-tag" style="background:${deptStyle.bg}; color:${deptStyle.color};">
+                        <i data-lucide="${deptStyle.icon}" style="width:12px;height:12px;"></i>
+                        <span>${p.department}</span>
+                      </span>
+                    </div>
+                    <div class="performer-semester">${p.semester}</div>
+                  </div>
+                </div>
+
+                <div class="score-circle-wrap">
+                  ${ringSvg}
+                  <div class="score-circle-val">
+                    ${p.score}
+                    <small>Score</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="performer-bottom-row">
+                <div class="cgpa-row">
+                  <span><i data-lucide="award" style="width:12px;height:12px;display:inline;vertical-align:-1px;"></i> CGPA</span>
+                  <span class="cgpa-val">${p.cgpa}</span>
+                </div>
+                <div class="cgpa-bar-bg">
+                  <div class="cgpa-bar-fill" style="width:${(p.cgpa / 10) * 100}%; background:linear-gradient(90deg, #38bdf8, ${strokeColor});"></div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        console.error("Failed to load top performers:", err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initHomePage);
+  </script>
+</body>
+</html>

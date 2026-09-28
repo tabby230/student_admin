@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance - NEX College of Arts and Science</title>
+  <meta name="description" content="Mark and review class attendance for every semester.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <nav class="top-navbar glass-panel">
+    <a href="index.html" class="brand-logo">
+      <img src="assets/images/logo.png" alt="NEX College of Arts and Science Logo" class="brand-icon-img" onerror="this.src='assets/images/logo.png'">
+      <span class="brand-name">NEX College of Arts and Science</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">
+        <i data-lucide="home" style="width:16px;height:16px;"></i>
+        <span>Home</span>
+      </a>
+      <a href="students.html" class="nav-link">
+        <i data-lucide="users" style="width:16px;height:16px;"></i>
+        <span>Students</span>
+      </a>
+      <a href="attendance.html" class="nav-link active">
+        <i data-lucide="clipboard-check" style="width:16px;height:16px;"></i>
+        <span>Attendance</span>
+      </a>
+      <a href="departments.html" class="nav-link">
+        <i data-lucide="landmark" style="width:16px;height:16px;"></i>
+        <span>Departments</span>
+      </a>
+      <a href="results.html" class="nav-link">
+        <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+        <span>Results</span>
+      </a>
+      <a href="analytics.html" class="nav-link">
+        <i data-lucide="line-chart" style="width:16px;height:16px;"></i>
+        <span>Analytics</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-bar-nav">
+        <i data-lucide="search" class="search-icon" style="width:15px;height:15px;"></i>
+        <input type="text" id="globalSearch" placeholder="Search students, departments, or anything...">
+      </div>
+
+      <button class="btn-icon-notify" title="Notifications">
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        <span class="notify-badge">3</span>
+      </button>
+
+      <div class="user-profile-nav" title="Admin profile">
+        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <div class="user-details-nav">
+          <span class="user-name">Aravindh</span>
+          <span class="user-role">Admin</span>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px;color:#94a3b8;margin-left:4px;"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- App Layout with Sidebar -->
+  <div class="app-layout">
+    <!-- Left Glass Sidebar -->
+    <div class="sidebar-col">
+      <aside class="sidebar glass-panel">
+      <div class="sidebar-menu">
+        <a href="index.html" class="sidebar-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Home</span>
+        </a>
+        <a href="students.html" class="sidebar-item">
+          <i data-lucide="users" style="width:18px;height:18px;"></i>
+          <span>Students</span>
+        </a>
+        <a href="attendance.html" class="sidebar-item active">
+          <i data-lucide="clipboard-check" style="width:18px;height:18px;"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="departments.html" class="sidebar-item">
+          <i data-lucide="landmark" style="width:18px;height:18px;"></i>
+          <span>Departments</span>
+        </a>
+        <a href="results.html" class="sidebar-item">
+          <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+          <span>Results</span>
+        </a>
+        <a href="analytics.html" class="sidebar-item">
+          <i data-lucide="line-chart" style="width:18px;height:18px;"></i>
+          <span>Analytics</span>
+        </a>
+      </div>
+
+      <!-- Bottom Promo Glass Card -->
+      <div class="sidebar-promo-card">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="graduation-cap" style="width:20px;height:20px;color:#38bdf8;"></i>
+          <h4>Better Students Brighter Futures</h4>
+        </div>
+        <p>Education is not just about learning, it's about building a better tomorrow.</p>
+        <div class="promo-accent-bar"></div>
+      </div>
+    </aside>
+
+      <!-- Rotating 3D Moon Widget -->
+      <div class="moon-widget" id="moonWidget" data-moon-src="assets/3dmodel/moon.glb">
+        <div class="moon-widget-loader">
+          <div class="moon-widget-spinner"></div>
+        </div>
+        <div class="moon-widget-fallback" hidden>
+          <span class="moon-widget-orb"></span>
+        </div>
+        <div class="moon-widget-hint">Drag to rotate</div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Page Header -->
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Attendance</h1>
+        <p style="color: rgba(255,255,255,0.92); font-size: 0.9rem; font-weight: 500;">Mark a class for a semester and subject. Everything is saved to the database.</p>
+      </div>
+
+      <!-- Session Controls -->
+      <div class="filter-bar">
+        <select id="attSemester" class="select-filter" title="Semester">
+          <option value="">Semester: choose&hellip;</option>
+        </select>
+
+        <select id="attSubject" class="select-filter" title="Subject">
+          <option value="">Subject: not specified</option>
+        </select>
+
+        <input type="date" id="attDate" class="select-filter" title="Session date">
+
+        <input type="text" id="attTakenBy" class="select-filter" style="min-width:170px;" placeholder="Taken by" value="Admin">
+
+        <button id="btnLoadRoster" class="btn-primary" style="padding:8px 16px; font-size:0.85rem; border-radius:10px; display:inline-flex; align-items:center; gap:6px; font-weight:700; cursor:pointer;">
+          <i data-lucide="users" style="width:16px;height:16px;"></i>
+          <span>Load Roster</span>
+        </button>
+      </div>
+
+      <!-- Roster / marking panel -->
+      <div class="glass-panel" style="padding:18px; margin-bottom:24px;">
+        <div id="attMessage" style="display:none; border-radius:10px; padding:10px 12px; font-size:0.82rem; margin-bottom:14px;"></div>
+
+        <div id="attSummary" style="display:none; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div style="background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); color:#fff;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.90);">Roster</span>
+            <span id="sumTotal" style="font-size:1.1rem; font-weight:700; margin-left:8px;">0</span>
+          </div>
+          <div style="background:rgba(74,222,128,0.10); padding:10px 14px; border-radius:12px; border:1px solid rgba(74,222,128,0.25); color:#fff;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.90);">Present</span>
+            <span id="sumPresent" style="font-size:1.1rem; font-weight:700; margin-left:8px;">0</span>
+          </div>
+          <div style="background:rgba(250,204,21,0.10); padding:10px 14px; border-radius:12px; border:1px solid rgba(250,204,21,0.25); color:#fff;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.90);">Late</span>
+            <span id="sumLate" style="font-size:1.1rem; font-weight:700; margin-left:8px;">0</span>
+          </div>
+          <div style="background:rgba(248,113,113,0.10); padding:10px 14px; border-radius:12px; border:1px solid rgba(248,113,113,0.25); color:#fff;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.90);">Absent</span>
+            <span id="sumAbsent" style="font-size:1.1rem; font-weight:700; margin-left:8px;">0</span>
+          </div>
+          <div style="background:rgba(56,189,248,0.10); padding:10px 14px; border-radius:12px; border:1px solid rgba(56,189,248,0.25); color:#fff;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.90);">Excused</span>
+            <span id="sumExcused" style="font-size:1.1rem; font-weight:700; margin-left:8px;">0</span>
+          </div>
+
+          <div style="display:flex; gap:8px; margin-left:auto; align-items:center; flex-wrap:wrap;">
+            <button class="btn-secondary" data-bulk="present" style="padding:7px 12px; font-size:0.78rem; border-radius:9px; cursor:pointer;">All present</button>
+            <button class="btn-secondary" data-bulk="absent" style="padding:7px 12px; font-size:0.78rem; border-radius:9px; cursor:pointer;">All absent</button>
+            <button id="btnClearMarks" class="btn-secondary" style="padding:7px 12px; font-size:0.78rem; border-radius:9px; cursor:pointer;">Clear</button>
+            <button id="btnSaveAttendance" class="btn-primary" style="padding:9px 18px; font-size:0.82rem; border-radius:10px; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+              <i data-lucide="save" style="width:15px;height:15px;"></i>
+              <span>Save to database</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="attRoster" style="display:flex; flex-direction:column; gap:8px;">
+          <p style="color:rgba(255,255,255,0.85); font-size:0.85rem;">Choose a semester and press <strong>Load Roster</strong>.</p>
+        </div>
+      </div>
+
+      <!-- Recent sessions -->
+      <div class="glass-panel" style="padding:18px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+          <h2 style="font-size:1.05rem; font-weight:700; color:#fff; margin:0;">Sessions</h2>
+          <select id="attSourceFilter" class="select-filter" style="padding:6px 10px; font-size:0.8rem;" title="Filter by source">
+            <option value="">All sources</option>
+            <option value="manual">Manual</option>
+            <option value="import">Imported</option>
+            <option value="legacy">Migrated history</option>
+          </select>
+          <button id="btnReloadSessions" class="btn-secondary" style="padding:6px 12px; font-size:0.78rem; border-radius:9px; cursor:pointer; margin-left:auto;">
+            <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Refresh
+          </button>
+        </div>
+        <div id="attSessions" style="overflow-x:auto;">
+          <p style="color:rgba(255,255,255,0.85); font-size:0.85rem;">Loading&hellip;</p>
+        </div>
+        <div id="attPager" style="display:flex; gap:8px; justify-content:center; align-items:center; margin-top:12px;"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="js/moon-widget.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

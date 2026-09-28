@@ -1,0 +1,148 @@
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-infinityfree
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enforce InfinityFree per-file size limits
+        run: |
+          set -uo pipefail
+          fail=0
+          while IFS= read -r -d '' rel; do
+            size=$(stat -c '%s' "$rel")
+            case "$rel" in
+              *.html|*.htm|*.php|*.js) limit=1048576;  kind="html/php/js" ;;
+              .htaccess)                limit=10240;    kind=".htaccess"   ;;
+              *)                        limit=10485760; kind="other file"  ;;
+            esac
+            if [ "$size" -gt "$limit" ]; then
+              echo "::error file=$rel is $size bytes, over the $limit byte limit for $kind. InfinityFree deletes oversized files silently, so it would 404."
+              fail=1
+            fi
+          done < <(find . -type f \
+            ! -path './.git/*' \
+            ! -path './database/*' \
+            ! -name '*.sh' \
+            ! -name 'README.md' \
+            ! -name '*.zip' \
+            ! -path './api/config.local.php' \
+            ! -path './api/config.local.example.php' \
+            ! -name '.env' \
+            ! -path './node_modules/*' \
+            ! -path './supabase/.temp/*' \
+            -printf '%P\0')
+          if [ "$fail" -ne 0 ]; then
+            echo "::error refusing to deploy: shrink the files above first."
+            exit 1
+          fi
+          echo "all files are within the host's limits."
+
+      - name: Sanity check PHP syntax
+        run: |
+          set -uo pipefail
+          fail=0
+          while IFS= read -r f; do
+            php -l "$f" >/dev/null 2>&1 || { echo "::error php syntax error in $f"; fail=1; }
+          done < <(find api -name '*.php' -not -name 'config.local*')
+          [ "$fail" -eq 0 ] || exit 1
+
+      - name: Build api/config.local.php from secrets
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+        run: |
+          set -euo pipefail
+          for v in DB_HOST DB_NAME DB_USER DB_PASS; do
+            [ -n "${!v}" ] || { echo "::error secret $v is not set"; exit 1; }
+          done
+          cat > /tmp/config.local.php <<PHPCONF
+          <?php
+          if (!defined('EDUTRACK_DB_CONFIG')) {
+              define('EDUTRACK_DB_CONFIG', [
+                  'host' => '${DB_HOST}',
+                  'port' => '${DB_PORT:-3306}',
+                  'name' => '${DB_NAME}',
+                  'user' => '${DB_USER}',
+                  'pass' => '${DB_PASS}',
+              ]);
+          }
+          PHPCONF
+          php -l /tmp/config.local.php
+
+      - name: Upload over FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+        run: |
+          set -euo pipefail
+          for v in FTP_HOST FTP_USER FTP_PASS; do
+            [ -n "${!v}" ] || { echo "::error secret $v is not set"; exit 1; }
+          done
+          host="${FTP_HOST#ftp://}"; host="${host%/}"
+          probe="${host%%:*}"
+          if ! timeout 20 bash -c "echo > /dev/tcp/${probe}/21" 2>/dev/null; then
+            echo "::error cannot reach ${probe}:21 - check the FTP host in the control panel"
+            exit 1
+          fi
+          lftp -u "${FTP_USER},${FTP_PASS}" "ftp://${host}" -e "
+            set ftp:ssl-allow no;
+            set ftp:passive-mode yes;
+            set net:max-retries 3;
+            set net:timeout 20;
+            mirror -R --verbose --parallel=4 --delete \
+              --exclude-glob '*.sh' \
+              --exclude-glob 'README.md' \
+              --exclude-glob '*.zip' \
+              --exclude-glob 'database/*' \
+              --exclude-glob 'api/config.local.php' \
+              --exclude-glob 'api/config.local.example.php' \
+              --exclude-glob '.git/*' \
+              --exclude-glob '.env' \
+              --exclude-glob 'node_modules/*' \
+              --exclude-glob 'supabase/*' \
+              --exclude-glob '.github/*' \
+              '${GITHUB_WORKSPACE}' /htdocs;
+            bye
+          "
+          lftp -u "${FTP_USER},${FTP_PASS}" "ftp://${host}" -e "
+            set ftp:ssl-allow no;
+            set ftp:passive-mode yes;
+            put '/tmp/config.local.php' /htdocs/api/config.local.php;
+            bye
+          "
+          rm -f /tmp/config.local.php
+
+      - name: Verify the deployment
+        env:
+          SITE: ${{ vars.SITE_URL }}
+        run: |
+          set -uo pipefail
+          [ -n "${SITE:-}" ] || { echo "::notice SITE_URL repo variable not set, skipping verification"; exit 0; }
+          sleep 5
+          fail=0
+          for p in index.html api/stats.php assets/3dmodel/moon.glb; do
+            code=$(curl -s -m 30 -A 'Mozilla/5.0' -o /dev/null -w '%{http_code}' "${SITE%/}/$p" || echo 000)
+            echo "$p -> $code"
+            case "$p" in
+              api/*)
+                [ "$code" = "200" ] || { echo "::error $p returned $code (503 means the DB credentials are wrong or the database is empty)"; fail=1; } ;;
+              *)
+                [ "$code" = "200" ] || { echo "::error $p returned $code"; fail=1; } ;;
+            esac
+          done
+          exit $fail

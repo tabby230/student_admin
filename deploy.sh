@@ -48,7 +48,9 @@ if ! timeout 15 bash -c "echo > /dev/tcp/${FTP_HOST%%:*}/21" 2>/dev/null; then
 fi
 
 TMP_CONFIG="$(mktemp)"
-trap 'rm -f "$TMP_CONFIG"' EXIT
+SKIPPED_FILE="$(mktemp)"
+trap 'rm -f "$TMP_CONFIG" "$SKIPPED_FILE"' EXIT
+: > "$SKIPPED_FILE"
 cat > "$TMP_CONFIG" <<PHPCONF
 <?php
 /**
@@ -66,8 +68,21 @@ if (!defined('EDUTRACK_DB_CONFIG')) {
 }
 PHPCONF
 
+# InfinityFree enforces a per-file size limit on the filesystem, not just on
+# upload, and anything over it is deleted without an error being reported.
+# The limits differ by type, so a single flat threshold silently loses files.
+size_limit_for() {
+  case "$1" in
+    *.html|*.htm|*.php|*.js) printf '1048576'   ;;  # 1 MB
+    .htaccess)                printf '10240'     ;;  # 10 kB
+    *)                        printf '10485760'  ;;  # 10 MB
+  esac
+}
+
 # Everything in the web root except local-only tooling, the SQL dumps
 # (never expose schema/seed data over HTTP) and the local dev config.
+# Files over the host's limit are appended to $SKIPPED_FILE so every backend
+# can exclude them explicitly instead of relying on the server to drop them.
 upload_list() {
   find . -type f \
     ! -path './.git/*' \
@@ -79,19 +94,36 @@ upload_list() {
     ! -name '.env' \
     ! -path './node_modules/*' \
     -printf '%P\n' \
+  | sort \
   | while IFS= read -r rel; do
       size=$(stat -c '%s' "$ROOT/$rel")
-      if [ "$size" -gt "${MAX_FILE_BYTES:-10485760}" ]; then
-        printf '[skip] %s (%s bytes - over the free-plan single-file limit)\n' \
-          "$rel" "$size" >&2
+      limit=$(size_limit_for "$rel")
+      if [ "$size" -gt "$limit" ]; then
+        printf '[skip] %s (%s bytes, limit %s for %s)\n' \
+          "$rel" "$size" "$limit" "$(case "$rel" in *.html|*.htm|*.php|*.js) echo html/php/js;; .htaccess) echo htaccess;; *) echo other;; esac)" >&2
+        printf '%s\n' "$rel" >> "$SKIPPED_FILE"
         continue
       fi
       printf '%s\n' "$rel"
-    done | sort
+    done
 }
 
 CRED="${FTP_USER}:${FTP_PASS}"
 BASE="ftp://${FTP_HOST}"
+
+UPLOAD_LIST="$(mktemp)"
+trap 'rm -f "$TMP_CONFIG" "$SKIPPED_FILE" "$UPLOAD_LIST"' EXIT
+upload_list > "$UPLOAD_LIST"
+
+if [ -s "$SKIPPED_FILE" ]; then
+  echo
+  echo "[error] $(wc -l < "$SKIPPED_FILE") file(s) exceed the host's per-file limit"
+  echo "        and WILL be deleted by the server if uploaded:"
+  sed 's/^/          /' "$SKIPPED_FILE"
+  echo
+  echo "        Shrink or drop these before deploying, or they will 404."
+  exit 1
+fi
 
 if command -v lftp >/dev/null 2>&1; then
   echo "[ftp] lftp backend"
@@ -116,17 +148,17 @@ if command -v lftp >/dev/null 2>&1; then
   "
 else
   echo "[ftp] curl backend (lftp not installed)"
-  total=$(upload_list | wc -l)
+  total=$(wc -l < "$UPLOAD_LIST")
   n=0
   while IFS= read -r rel; do
     n=$((n + 1))
     printf '\r[%d/%d] %s' "$n" "$total" "$rel"
     curl -sS --ftp-create-dirs -u "$CRED" -T "$ROOT/$rel" "$BASE/htdocs/$rel"
-  done < <(upload_list)
+  done < "$UPLOAD_LIST"
   printf '\n'
   curl -sS --ftp-create-dirs -u "$CRED" -T "$TMP_CONFIG" "$BASE/htdocs/api/config.local.php"
 fi
 
 echo
-echo "[done] files uploaded."
+echo "[done] $(wc -l < "$UPLOAD_LIST") files uploaded."
 echo "Next: open  http://${FTP_HOST#ftp.}/api/stats.php"

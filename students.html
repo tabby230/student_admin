@@ -5,8 +5,245 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Students Directory - NEX College of Arts and Science</title>
   <meta name="description" content="Manage and view all student records in your institution.">
-  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Force reload with timestamp to bypass cache
+    var timestamp = new Date().getTime();
+    document.write('<link rel="stylesheet" href="css/style.css?t=' + timestamp + '">');
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style id="critical-sf-styles">
+    /* Critical styles to prevent white flash */
+    #studentForm input,
+    #studentForm select {
+      background: rgba(15, 23, 42, 0.6) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      border-radius: 12px !important;
+      padding: 14px 16px !important;
+      color: #fff !important;
+      font-size: 0.9rem !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+    }
+    #studentForm label {
+      color: rgba(255, 255, 255, 0.95) !important;
+      font-weight: 600 !important;
+    }
+    /* Fix browser autofill/autocomplete white background */
+    #studentForm input:-webkit-autofill,
+    #studentForm input:-webkit-autofill:hover,
+    #studentForm input:-webkit-autofill:focus,
+    #studentForm input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.8) inset !important;
+      -webkit-text-fill-color: #fff !important;
+      background-color: rgba(15, 23, 42, 0.6) !important;
+      background-clip: content-box !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+    /* Firefox autofill fix */
+    #studentForm input:-moz-autofill,
+    #studentForm input:-moz-autofill-preview {
+      background-color: rgba(15, 23, 42, 0.6) !important;
+      color: #fff !important;
+      filter: none !important;
+    }
+    
+    /* Custom Alert Modal Styles */
+    .custom-alert-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+    }
+    
+    .custom-alert-box {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(32px) saturate(180%);
+      -webkit-backdrop-filter: blur(32px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 32px;
+      min-width: 320px;
+      max-width: 480px;
+      box-shadow: 
+        0 32px 80px rgba(0, 0, 0, 0.6),
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: scale(0.8) translateY(20px);
+      opacity: 0;
+      animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.1s;
+    }
+    
+    .custom-alert-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.3s;
+      transform: scale(0);
+    }
+    
+    .custom-alert-icon.success {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+      border: 2px solid rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+    
+    .custom-alert-icon.error {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+    
+    .custom-alert-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .custom-alert-message {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    .custom-alert-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    }
+    
+    .custom-alert-button:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+    
+    .custom-alert-button:active {
+      transform: translateY(0);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0) rotate(-180deg);
+      }
+      to {
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    /* Photo Upload Section Styles */
+    .photo-upload-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .photo-preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .photo-preview:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 12px 32px rgba(56, 189, 248, 0.2);
+    }
+    
+    .btn-upload-photo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.2));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 12px;
+      color: #38bdf8;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .btn-upload-photo:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(37, 99, 235, 0.3));
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(56, 189, 248, 0.3);
+    }
+    
+    .btn-upload-photo:active {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
 
@@ -56,7 +293,9 @@
       </button>
 
       <div class="user-profile-nav" title="Admin profile">
-        <img src="assets/images/avatar-rithik.png" alt="Aravindh Profile">
+        <span class="admin-avatar-icon" aria-hidden="true">
+          <i data-lucide="user-round" style="width:16px;height:16px;"></i>
+        </span>
         <div class="user-details-nav">
           <span class="user-name">Aravindh</span>
           <span class="user-role">Admin</span>
@@ -117,7 +356,6 @@
         <div class="moon-widget-fallback" hidden>
           <span class="moon-widget-orb"></span>
         </div>
-        <div class="moon-widget-hint">Drag to rotate</div>
       </div>
     </div>
 
@@ -206,12 +444,17 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/api.js"></script>
-  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script>
+    var timestamp = new Date().getTime();
+    document.write('<script src="js/api.js?t=' + timestamp + '"><\/script>');
+    document.write('<script src="js/app.js?t=' + timestamp + '"><\/script>');
+    document.write('<script src="js/notifications.js?t=' + timestamp + '"><\/script>');
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="js/moon-widget.js"></script>
+  <script src="js/moon-widget.js?v=4"></script>
   <script>
     let currentStudents = [];
     let currentPage = 1;
@@ -272,7 +515,7 @@
               <div class="student-card-header">
                 <div class="student-avatar-icon">
                   <i data-lucide="user" style="width:24px;height:24px;"></i>
-                  ${st.avatar ? `<img src="${st.avatar}" alt="${st.name}" class="student-avatar-img" loading="lazy" onerror="this.remove();">` : ``}
+                  ${studentImgHtml(st, 'student-avatar-img', 'loading="lazy"')}
                 </div>
                 <div class="student-info">
                   <h4>${st.name}</h4>
@@ -334,7 +577,7 @@
                       <div style="display:flex; align-items:center; gap:10px;">
                         <div class="student-avatar-icon" style="width:34px;height:34px;">
                           <i data-lucide="user" style="width:18px;height:18px;"></i>
-                          ${st.avatar ? `<img src="${st.avatar}" alt="${st.name}" class="student-avatar-img" loading="lazy" onerror="this.remove();">` : ``}
+                          ${studentImgHtml(st, 'student-avatar-img', 'loading="lazy"')}
                         </div>
                         <span style="font-weight:700; color:#fff;">${st.name}</span>
                       </div>

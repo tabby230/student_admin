@@ -9,7 +9,8 @@ try {
         SELECT 
             s.id,
             s.name,
-            s.avatar,
+            s.photo,
+            COALESCE(NULLIF(s.photo, ''), s.avatar) AS avatar,
             d.name AS department,
             sem.semester_number,
             ROUND(AVG(m.marks), 1) AS avg_marks
@@ -17,7 +18,7 @@ try {
         INNER JOIN `departments` d ON s.department_id = d.id
         INNER JOIN `semesters` sem ON s.semester_id = sem.id
         INNER JOIN `marks` m ON s.id = m.student_id AND m.semester_id = s.semester_id
-        GROUP BY s.id, s.name, s.avatar, d.name, sem.semester_number
+        GROUP BY s.id, s.name, s.photo, s.avatar, d.name, sem.semester_number
         ORDER BY avg_marks DESC
         LIMIT 3
     ";
@@ -41,6 +42,9 @@ try {
         elseif ($semNum === 3) $suffix = 'rd';
 
         $score = (float)$row['avg_marks'];
+        // $row['avatar'] is already COALESCE(NULLIF(photo,''), avatar), so an
+        // uploaded photo always wins. Defaults apply only when both are empty.
+        $photo = $row['photo'];
         $avatar = $row['avatar'];
         if (!$avatar && isset($defaultAvatars[$rank])) {
             $avatar = $defaultAvatars[$rank];
@@ -53,6 +57,7 @@ try {
             'semester' => $semNum . $suffix . ' Semester',
             'score' => number_format($score, 1) . '%',
             'cgpa' => round($score / 10, 1),
+            'photo' => $photo ?: null,
             'avatar' => $avatar ?: 'assets/images/avatar-rithik.png'
         ];
         $rank++;

@@ -77,29 +77,38 @@ if (!move_uploaded_file($file['tmp_name'], $dest)) {
 $photoUrl = 'assets/uploads/students/' . $filename;
 
 try {
-    $pdo = getDBConnection();
+    $pdo = dbOrFail();
 
-    if ($id > 0) {
-        $stmt = $pdo->prepare("UPDATE `students` SET `photo` = :photo WHERE `id` = :id");
-        $stmt->execute(['photo' => $photoUrl, 'id' => $id]);
-        $routeColumn = 'id';
-        $routeValue  = $id;
-    } else {
-        $stmt = $pdo->prepare("UPDATE `students` SET `photo` = :photo WHERE `roll_no` = :roll_no");
-        $stmt->execute(['photo' => $photoUrl, 'roll_no' => $rollNo]);
-        $routeColumn = 'roll_no';
-        $routeValue  = $rollNo;
-    }
-
-    if ($stmt->rowCount() === 0) {
-        // rowCount can be 0 when nothing changed; verify the student exists
-        $c = $pdo->prepare("SELECT COUNT(*) FROM `students` WHERE `$routeColumn` = :v");
-        $c->execute(['v' => $routeValue]);
-        if ((int)$c->fetchColumn() === 0) {
-            @unlink($dest);
-            sendJsonError('No student found with that id/roll number.', 404);
-            return;
+    // Inner try: a failing UPDATE is a query error, not an unreachable
+    // database. The uploaded file is removed either way, so this must not
+    // rely on runQuery() (which exits before the outer catch can unlink).
+    try {
+        if ($id > 0) {
+            $stmt = $pdo->prepare("UPDATE `students` SET `photo` = :photo, `avatar` = :photo2 WHERE `id` = :id");
+            $stmt->execute(['photo' => $photoUrl, 'photo2' => $photoUrl, 'id' => $id]);
+            $routeColumn = 'id';
+            $routeValue  = $id;
+        } else {
+            $stmt = $pdo->prepare("UPDATE `students` SET `photo` = :photo, `avatar` = :photo2 WHERE `roll_no` = :roll_no");
+            $stmt->execute(['photo' => $photoUrl, 'photo2' => $photoUrl, 'roll_no' => $rollNo]);
+            $routeColumn = 'roll_no';
+            $routeValue  = $rollNo;
         }
+
+        if ($stmt->rowCount() === 0) {
+            // rowCount can be 0 when nothing changed; verify the student exists
+            $c = $pdo->prepare("SELECT COUNT(*) FROM `students` WHERE `$routeColumn` = :v");
+            $c->execute(['v' => $routeValue]);
+            if ((int)$c->fetchColumn() === 0) {
+                @unlink($dest);
+                sendJsonError('No student found with that id/roll number.', 404);
+                return;
+            }
+        }
+    } catch (PDOException $qe) {
+        @unlink($dest);
+        sendQueryError($qe, 'Photo update query failed.');
+        return;
     }
 
     sendJsonResponse([
@@ -110,8 +119,9 @@ try {
         'photo'   => $photoUrl
     ]);
 } catch (PDOException $e) {
-    // Database unavailable - remove the orphan file and report cleanly
+    // Reached only when the CONNECTION itself failed. Remove the orphan file
+    // and report the real cause.
     @unlink($dest);
-    sendJsonError('Database unavailable: ' . $e->getMessage(), 503);
+    sendDbUnavailable($e);
     return;
 }

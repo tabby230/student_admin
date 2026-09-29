@@ -60,7 +60,8 @@ try {
             ), 0), 0) AS attendance,
             ROUND(AVG(m.marks), 1) AS marks,
             ROUND(AVG(m.marks) / 10, 1) AS cgpa,
-            s.avatar,
+            s.photo,
+            COALESCE(NULLIF(s.photo, ''), s.avatar) AS avatar,
             s.email,
             s.phone
         FROM `students` s
@@ -68,7 +69,7 @@ try {
         INNER JOIN `semesters` sem ON s.semester_id = sem.id
         LEFT JOIN `marks` m ON s.id = m.student_id AND m.semester_id = s.semester_id
         WHERE " . implode(' AND ', $where) . "
-        GROUP BY s.id, s.name, s.roll_no, d.name, s.year, sem.semester_number, s.avatar, s.email, s.phone
+        GROUP BY s.id, s.name, s.roll_no, d.name, s.year, sem.semester_number, s.photo, s.avatar, s.email, s.phone
         ORDER BY s.id ASC
     ";
 
@@ -94,6 +95,7 @@ try {
             'attendance' => (int)$r['attendance'],
             'marks' => $r['marks'] === null ? null : (float)$r['marks'],
             'cgpa' => $r['cgpa'] === null ? null : (float)$r['cgpa'],
+            'photo' => $r['photo'],
             'avatar' => $r['avatar'],
             'email' => $r['email'],
             'phone' => $r['phone']

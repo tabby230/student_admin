@@ -249,7 +249,7 @@ body {
    ============================================================ */
 .app-layout {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: 24px;
   margin: 0 28px 32px 28px;
 }
@@ -349,7 +349,7 @@ body {
 
 .hero-section {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   align-items: center;
   gap: 24px;
   min-height: 0;
@@ -571,7 +571,7 @@ body {
    ============================================================ */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   margin-bottom: 36px;
 }
@@ -695,7 +695,7 @@ body {
 
 .performers-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin-bottom: 40px;
 }
@@ -899,7 +899,7 @@ body {
    ============================================================ */
 .students-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px; margin-bottom: 28px;
 }
 
@@ -1011,7 +1011,7 @@ body {
    ============================================================ */
 .departments-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px; margin-bottom: 30px;
 }
 
@@ -1101,34 +1101,6 @@ body {
 /* Content area — always transparent */
 .content-area { background: transparent; }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 1200px) {
-  .students-grid    { grid-template-columns: repeat(3, 1fr); }
-  .stats-grid       { grid-template-columns: repeat(2, 1fr); }
-  .performers-grid  { grid-template-columns: 1fr; }
-  .departments-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 900px) {
-  .app-layout     { grid-template-columns: 1fr; }
-  .sidebar-col    { display: none; }
-  .hero-section   { grid-template-columns: 1fr; text-align: center; }
-  .hero-buttons   { justify-content: center; }
-  .hero-subtitle  { margin: 0 auto 28px auto; }
-  .students-grid  { grid-template-columns: repeat(2, 1fr); }
-  .top-navbar     { margin: 10px 14px; padding: 10px 14px; }
-  .nav-links      { display: none; }
-}
-
-@media (max-width: 600px) {
-  .students-grid    { grid-template-columns: 1fr; }
-  .departments-grid { grid-template-columns: 1fr; }
-  .stats-grid       { grid-template-columns: 1fr; }
-  .hero-title       { font-size: 1.8rem; }
-  .search-bar-nav   { display: none; }
-}
 
 /* ============================================================
    SIDEBAR 3D MOON WIDGET
@@ -1169,8 +1141,7 @@ body {
 }
 
 .moon-widget-loader[hidden],
-.moon-widget-fallback[hidden],
-.moon-widget-hint[hidden] { display: none; }
+.moon-widget-fallback[hidden] { display: none; }
 
 .moon-widget-spinner {
   width: 26px;
@@ -1183,20 +1154,6 @@ body {
 
 @keyframes moonWidgetSpin {
   to { transform: rotate(360deg); }
-}
-
-.moon-widget-hint {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
-  text-align: center;
-  font-size: 0.60rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.55);
-  background: transparent;
-  text-shadow: none;
-  pointer-events: none;
 }
 
 .moon-widget-fallback {
@@ -1214,4 +1171,1340 @@ body {
   border-radius: 50%;
   background: radial-gradient(circle at 34% 30%, #f8fafc, #cbd5e1 42%, #64748b 100%);
   box-shadow: 0 0 26px rgba(148,163,184,0.45), inset -8px -10px 22px rgba(15,23,42,0.55);
+}
+
+/* ============================================================
+   ADD / EDIT STUDENT: Full-Screen Glassmorphism Form
+   ============================================================ */
+
+/* Full-screen overlay with campus background image and glassmorphism */
+.sf-page {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: none;
+  overflow-y: auto;
+  background-color: #0a0f1c;
+  background-image: 
+    linear-gradient(rgba(10, 15, 28, 0.75), rgba(10, 15, 28, 0.85)),
+    radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.18), transparent 50%),
+    radial-gradient(circle at 85% 25%, rgba(168, 85, 247, 0.15), transparent 55%),
+    radial-gradient(circle at 40% 85%, rgba(16, 185, 129, 0.12), transparent 50%),
+    url('../assets/images/2bg-campus.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.sf-page.open {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Full-screen centered glass card */
+.sf-wrap {
+  width: 100%;
+  max-width: 1400px;
+  max-height: none;
+  min-height: calc(100vh - 40px);
+  overflow-y: visible;
+  padding: 48px;
+  position: relative;
+  /* Premium Glassmorphism */
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  box-shadow: 
+    0 32px 120px rgba(0, 0, 0, 0.7),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  transition: var(--transition);
+  margin: auto;
+}
+
+/* Header section */
+.sf-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 0;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Back button as glass pill */
+.sf-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  align-self: flex-start;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sf-back:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  color: #38bdf8;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Title and subtitle */
+.sf-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.sf-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.92;
+}
+
+/* Form grid with responsive columns */
+.sf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+@media (max-width: 1000px) {
+  .sf-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .sf-grid {
+    grid-template-columns: 1fr;
+  }
+  .sf-actions {
+    flex-direction: column;
+  }
+  .sf-actions button {
+    width: 100%;
+  }
+}
+
+/* Field containers */
+#studentForm.sf-grid > div,
+#studentForm .sf-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Labels */
+#studentForm.sf-grid > div label,
+#studentForm .sf-grid label {
+  font-size: 0.8rem !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 600 !important;
+  margin-bottom: 0 !important;
+  display: block !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Input and select fields */
+#studentForm.sf-grid > div input,
+#studentForm.sf-grid > div select,
+#studentForm .sf-grid input,
+#studentForm .sf-grid select,
+#studentForm input,
+#studentForm select {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  color: #fff !important;
+  font-size: 0.9rem !important;
+  font-family: inherit !important;
+  outline: none !important;
+  width: 100% !important;
+  transition: var(--transition) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+#studentForm.sf-grid > div input:focus,
+#studentForm.sf-grid > div select:focus,
+#studentForm .sf-grid input:focus,
+#studentForm .sf-grid select:focus,
+#studentForm input:focus,
+#studentForm select:focus {
+  border-color: #38bdf8 !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  box-shadow: 
+    0 0 0 3px rgba(56, 189, 248, 0.2),
+    0 4px 16px rgba(56, 189, 248, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px);
+}
+
+#studentForm.sf-grid > div input:hover,
+#studentForm.sf-grid > div select:hover,
+#studentForm .sf-grid input:hover,
+#studentForm .sf-grid select:hover,
+#studentForm input:hover,
+#studentForm select:hover {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+}
+
+/* Buttons bar at bottom with divider */
+.sf-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sf-actions button {
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sf-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.sf-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.sf-actions .btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  color: #fff;
+}
+
+.sf-actions .btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+/* Readable dropdown with custom arrow */
+#studentForm.sf-grid > div select,
+#studentForm select {
+  color-scheme: dark !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 16px center !important;
+  padding-right: 40px !important;
+}
+
+#studentForm.sf-grid > div select option,
+#studentForm select option {
+  background: #0f172a !important;
+  color: #fff !important;
+  padding: 10px !important;
+}
+
+#studentForm.sf-grid > div select option:checked,
+#studentForm select option:checked {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+#studentForm.sf-grid > div input[type="date"],
+#studentForm input[type="date"] {
+  color-scheme: dark !important;
+}
+
+#studentForm.sf-grid > div input[type="date"]::-webkit-calendar-picker-indicator,
+#studentForm input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+#studentForm.sf-grid > div input[type="date"]::-webkit-calendar-picker-indicator:hover,
+#studentForm input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Placeholder styling */
+#studentForm.sf-grid > div input::placeholder,
+#studentForm .sf-grid input::placeholder {
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-weight: 400 !important;
+}
+
+#studentForm.sf-grid > div input:focus::placeholder,
+#studentForm .sf-grid input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Responsive margins for different screen sizes */
+@media (max-width: 1366px) {
+  .sf-wrap {
+    max-width: 1200px;
+    padding: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sf-page.open {
+    padding: 16px;
+  }
+  .sf-wrap {
+    padding: 32px 24px;
+    min-height: calc(100vh - 32px);
+  }
+  .sf-grid {
+    gap: 20px;
+  }
+  .sf-title {
+    font-size: 1.6rem;
+  }
+  .sf-sub {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .sf-wrap {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .sf-title {
+    font-size: 1.4rem;
+  }
+}
+
+/* Field-level validation errors */
+.sf-field-error {
+  font-size: 0.72rem;
+  color: #ff9b9b;
+  margin-top: 2px;
+  min-height: 0;
+  display: none;
+}
+
+.sf-invalid {
+  border-color: rgba(255, 90, 90, 0.9) !important;
+  box-shadow: 0 0 0 3px rgba(255, 90, 90, 0.18) !important;
+}
+
+/* Autocomplete styling for inputs */
+#studentForm input:-webkit-autofill,
+#studentForm input:-webkit-autofill:hover,
+#studentForm input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.8) inset !important;
+  box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.8) inset !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Autocomplete styling for inputs */
+#studentForm input:-webkit-autofill,
+#studentForm input:-webkit-autofill:hover,
+#studentForm input:-webkit-autofill:focus,
+#studentForm input:-webkit-autofill:active,
+#studentForm.sf-grid > div input:-webkit-autofill,
+#studentForm.sf-grid > div input:-webkit-autofill:hover,
+#studentForm.sf-grid > div input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.8) inset !important;
+  -webkit-text-fill-color: #fff !important;
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  background-clip: content-box !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 12px !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Firefox autofill */
+#studentForm input:-moz-autofill,
+#studentForm input:-moz-autofill-preview,
+#studentForm.sf-grid > div input:-moz-autofill {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  color: #fff !important;
+  filter: none !important;
+}
+
+/* Required field indicator */
+#studentForm label:has(+ input[required])::after,
+#studentForm label:has(+ select[required])::after {
+  content: ' *';
+  color: #f87171;
+  font-weight: 700;
+}
+
+/* Better disabled state */
+#studentForm input:disabled,
+#studentForm select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(15, 23, 42, 0.3) !important;
+}
+
+/* ============================================================
+   ADMIN AVATAR — icon only, no photo
+   ============================================================ */
+.user-profile-nav .admin-avatar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(168, 85, 247, 0.35));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+/* ============================================================
+   NOTIFICATION PANEL — today's absentees
+   ============================================================ */
+.notif-panel {
+  position: fixed;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  max-height: 78vh;
+  display: none;
+  flex-direction: column;
+  background: rgba(8, 12, 24, 0.88);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  z-index: 12000;
+  color: #fff;
+}
+.notif-panel.open { display: flex; animation: notifIn 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes notifIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.notif-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  flex-shrink: 0;
+}
+.notif-head h4 { margin: 0; font-size: 0.92rem; font-weight: 700; flex: 1; }
+.notif-head .notif-date {
+  font-size: 0.66rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.notif-head .notif-date.fallback {
+  background: rgba(249, 115, 22, 0.18);
+  border-color: rgba(249, 115, 22, 0.45);
+  color: #fdba74;
+}
+.notif-refresh {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  transition: var(--transition);
+}
+.notif-refresh:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+.notif-refresh.spin svg { animation: spin 1s linear infinite; }
+
+.notif-list { overflow-y: auto; padding: 8px; flex: 1; }
+.notif-list::-webkit-scrollbar { width: 6px; }
+.notif-list::-webkit-scrollbar-track { background: transparent; }
+.notif-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 3px; }
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.notif-item:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.12); }
+.notif-item + .notif-item { margin-top: 2px; }
+
+.notif-item-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.28), rgba(249, 115, 22, 0.28));
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fff;
+  overflow: hidden;
+}
+.notif-item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.notif-item-info { flex: 1; min-width: 0; }
+.notif-item-info .nm {
+  font-size: 0.82rem; font-weight: 700; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.notif-item-info .sub {
+  font-size: 0.68rem; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.notif-item-info .no-phone { color: #fca5a5; }
+
+.notif-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.notif-btn {
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  transition: var(--transition);
+}
+.notif-btn:hover { transform: translateY(-2px); color: #fff; background: rgba(255, 255, 255, 0.20); }
+.notif-btn.view:hover   { background: rgba(56, 189, 248, 0.30);  border-color: rgba(56, 189, 248, 0.5); }
+.notif-btn.call:hover   { background: rgba(16, 185, 129, 0.30);  border-color: rgba(16, 185, 129, 0.5); }
+.notif-btn.wa:hover     { background: rgba(37, 211, 102, 0.32);  border-color: rgba(37, 211, 102, 0.6); }
+.notif-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.notif-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.notif-empty h4 { margin: 12px 0 4px; font-size: 0.9rem; color: #fff; }
+.notif-empty p { margin: 0; font-size: 0.75rem; }
+
+/* ---- message composer ---- */
+.notif-composer {
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  flex-shrink: 0;
+}
+.notif-composer label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.notif-composer textarea {
+  width: 100%;
+  min-height: 62px;
+  max-height: 130px;
+  resize: vertical;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+.notif-composer textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.20);
+}
+.notif-composer textarea::placeholder { color: rgba(255, 255, 255, 0.42); }
+
+.notif-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+.notif-target {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 120px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.notif-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border-radius: 11px;
+  border: 1px solid rgba(37, 211, 102, 0.45);
+  background: linear-gradient(135deg, #128c4a, #0f7a3d);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.notif-send:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35); }
+.notif-send:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ============================================================
+   CENTRE SUCCESS TOAST — black glassmorphism
+   Static by request: no pop-in, no halo, no tick draw-in. The
+   panel simply appears and disappears.
+   ============================================================ */
+.center-toast-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.center-toast {
+  background: rgba(6, 9, 18, 0.92);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 26px;
+  padding: 38px 46px;
+  min-width: 320px;
+  max-width: 420px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.center-toast-icon {
+  width: 84px; height: 84px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(5, 150, 105, 0.28));
+  border: 2px solid rgba(16, 185, 129, 0.55);
+  color: #10b981;
+}
+.center-toast-icon svg { width: 40px; height: 40px; stroke-width: 3; }
+
+.center-toast h3 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+}
+.center-toast p {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.55;
+}
+.center-toast .toast-sub {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.70);
+  word-break: break-word;
+}
+.center-toast .toast-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(249, 115, 22, 0.18);
+  border: 1px solid rgba(249, 115, 22, 0.42);
+  color: #fdba74;
+}
+.center-toast .toast-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.center-toast .toast-btn:hover { background: rgba(255, 255, 255, 0.20); }
+
+@media (max-width: 640px) {
+  .notif-panel { width: calc(100vw - 24px); }
+  .center-toast { padding: 30px 26px; min-width: 0; }
+}
+
+/* ============================================================
+   SPINNER — used by loading icons (notif refresh, CSV import, moon loader)
+   ============================================================ */
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   RESPONSIVE
+   Desktop (1561px and up) is untouched — the rules below only
+   progressively relax the layout as the viewport narrows.
+   Breakpoints follow the real layout limits of this design:
+     1560px  the glass nav bar stops fitting on one line, so the
+             type size and pill padding tighten
+     1360px  the profile pill drops to avatar + chevron
+     1200px  four card columns stop fitting beside the sidebar
+     1180px  the pill nav is replaced by the drawer (js NAV_BREAKPOINT)
+     1024px  tablet landscape
+     900px   the sidebar can no longer share a row with the content;
+             the search field gets its own row (js SEARCH_BREAKPOINT)
+     700px   two card columns stop fitting comfortably
+     600px   filter controls and card tiles need their own rows
+     480px   phone layout
+     380px   small-phone layout
+   ============================================================ */
+
+/* ---- overflow guards: nothing may push the page sideways ---- */
+img, svg, video, canvas { max-width: 100%; }
+img, video { height: auto; }
+
+/* ---- flex children of the navbar must be allowed to shrink ----
+   The pill bar, the search field and the profile pill are all fixed-width
+   by design, so together they overflow the navbar long before the page
+   itself gets narrow. Allowing the search field to absorb the difference
+   keeps every control reachable instead of letting it slide off-screen. */
+.top-navbar > *,
+.nav-links,
+.nav-actions,
+.search-bar-nav { min-width: 0; }
+
+.nav-links,
+.nav-actions,
+.search-bar-nav { flex: 0 1 auto; }
+
+.brand-logo,
+.nav-link { flex-shrink: 1; }
+
+.user-profile-nav,
+.btn-icon-notify { flex-shrink: 0; }
+
+.search-bar-nav input { min-width: 0; }
+
+/* ---- 1fr tracks must be allowed to shrink below their content ----
+   A bare `1fr` is minmax(auto, 1fr), so a long word or a wide card can
+   force the track wider than the viewport. The grids above are declared
+   with minmax(0, 1fr) so the declared ratio is kept on desktop while the
+   track can still actually shrink; these rules cover the remaining
+   grid/flex containers and their children. */
+.app-layout,
+.content-area,
+.home-container,
+.stats-grid,
+.students-grid,
+.performers-grid,
+.departments-grid,
+.filter-bar { min-width: 0; }
+
+/* grid/flex children default to min-width:auto, which lets wide content
+   (a long name, a nowrap tag) push past the track instead of shrinking */
+.stats-grid > *,
+.students-grid > *,
+.performers-grid > *,
+.departments-grid > *,
+.student-card,
+.performer-card,
+.dept-card,
+.stat-card,
+.performer-identity,
+.performer-meta,
+.student-info,
+.student-stats-row,
+.dept-card > div { min-width: 0; }
+
+.student-stats-row { flex-wrap: wrap; row-gap: 8px; }
+.hero-content,
+.hero-image-wrap { min-width: 0; }
+
+/* ============================================================
+   HAMBURGER BUTTON + OFF-CANVAS MOBILE DRAWER
+   The button only exists in the DOM below 1180px (js buildMobileNav);
+   it is display:none on desktop so the navbar is unchanged.
+   ============================================================ */
+.nav-toggle {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-toggle:hover { background: rgba(255,255,255,0.20); }
+.nav-toggle:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.nav-toggle-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 18px;
+  height: 14px;
+}
+
+.nav-toggle-bars > span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+.nav-open .nav-toggle { background: rgba(56,189,248,0.22); border-color: rgba(56,189,248,0.55); }
+.nav-open .nav-toggle-bars > span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-open .nav-toggle-bars > span:nth-child(2) { opacity: 0; }
+.nav-open .nav-toggle-bars > span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* scrim behind the drawer */
+.nav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(5,10,25,0.62);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.nav-scrim:not([hidden]) { opacity: 1; }
+
+/* page scroll lock while the drawer is open */
+body.nav-locked { overflow: hidden; }
+
+/* the drawer itself */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1600;
+  width: min(310px, 86vw);
+  max-width: 86vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(9, 14, 32, 0.92);
+  backdrop-filter: blur(26px) saturate(180%);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  border-right: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 18px 0 60px rgba(0,0,0,0.55);
+  color: #fff;
+  transform: translateX(-100%);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav.open { transform: translateX(0); visibility: visible; }
+
+.mobile-nav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  flex-shrink: 0;
+}
+
+.mobile-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.2px;
+}
+
+.mobile-nav-logo-img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+.mobile-nav-logo:empty { display: none; }
+.mobile-nav-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.mobile-nav-close {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.mobile-nav-close:hover { background: rgba(255,255,255,0.22); }
+.mobile-nav-close:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+.mobile-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 10px;
+  flex: 1 1 auto;
+}
+
+/* the pill bar is moved in here on small screens, so it becomes a
+   full-width vertical list of touch-friendly rows */
+.mobile-nav-menu .nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.mobile-nav-menu .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.mobile-nav-menu .nav-link:hover,
+.mobile-nav-menu .nav-link:focus-visible {
+  background: rgba(255,255,255,0.10);
+  outline: none;
+}
+
+.mobile-nav-menu .nav-link.active {
+  background: var(--active-pill-bg);
+  box-shadow: var(--active-pill-shadow);
+  font-weight: 600;
+}
+
+.mobile-nav-menu .nav-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.mobile-nav-foot {
+  padding: 12px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(255,255,255,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mobile-nav-profile { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mobile-nav-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.mobile-nav-profile-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.mnp-name { font-size: 0.86rem; font-weight: 700; }
+.mnp-role { font-size: 0.72rem; color: var(--text-muted); }
+
+.mobile-nav-promo { margin-top: 0; }
+
+
+/* ---- 1560px and below: the glass nav bar no longer fits on one line.
+   Only the type size, pill padding and search width change; every label,
+   icon and colour stays exactly as it is. ---- */
+@media (max-width: 1560px) {
+  .top-navbar  { padding: 10px 18px; gap: 12px; }
+  .brand-logo  { font-size: clamp(0.82rem, 1.2vw, 1rem); gap: 10px; }
+  .brand-icon-img { width: 32px; height: 32px; }
+  .nav-link    { padding: 8px 11px; font-size: 0.8rem; gap: 6px; }
+  .nav-actions { gap: 12px; }
+  .search-bar-nav input { width: 200px; }
+  .search-bar-nav input:focus { width: 230px; }
+}
+
+/* ---- 1360px and below: the profile pill drops to avatar + chevron so
+   the search field keeps a usable width. ---- */
+@media (max-width: 1360px) {
+  .nav-link { padding: 8px 9px; }
+  .user-profile-nav .user-details-nav { display: none; }
+  .user-profile-nav { padding: 4px; }
+  .search-bar-nav input,
+  .search-bar-nav input:focus { width: 180px; }
+}
+
+/* ---- 1200px: card grids step down, sidebar narrows ---- */
+@media (max-width: 1200px) {
+  .app-layout      { grid-template-columns: 215px minmax(0, 1fr); }
+  .sidebar-col     { top: 104px; }
+  .students-grid   { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stats-grid      { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .performers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .departments-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .search-bar-nav input { width: 160px; }
+  .search-bar-nav input:focus { width: 190px; }
+  .hero-image-wrap img { width: 100%; }
+}
+
+/* ---- 1180px and below: hamburger + drawer replace the pill nav ---- */
+@media (max-width: 1180px) {
+  .nav-toggle { display: inline-flex; }
+  .top-navbar { padding: 10px 16px; gap: 12px; }
+  .app-layout { margin: 0 18px 28px; gap: 18px; }
+  .home-container { padding: 0 18px 44px; }
+  .search-bar-nav input,
+  .search-bar-nav input:focus { width: 150px; }
+  .brand-logo { flex: 1 1 auto; }
+}
+
+/* ---- 1024px: tablet landscape — tighter sidebar, roomier cards ---- */
+@media (max-width: 1024px) {
+  .app-layout      { grid-template-columns: 195px minmax(0, 1fr); }
+  .sidebar         { padding: 16px 10px; }
+  .sidebar-item    { padding: 11px 12px; font-size: 0.85rem; gap: 10px; }
+  .sidebar-promo-card { margin-top: 20px; padding: 14px; }
+  .stats-grid, .students-grid, .performers-grid, .departments-grid { gap: 14px; }
+  .stat-card, .performer-card, .dept-card { padding: 18px; }
+  .stat-value { font-size: 1.6rem; }
+  .hero-section { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 18px; }
+  .search-bar-nav input,
+  .search-bar-nav input:focus { width: 132px; }
+}
+
+/* ---- 900px and below: single column, drawer nav, search on row 2 ---- */
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0 14px 28px;
+  }
+  /* the sidebar (and the moon widget inside it) is unreachable in one
+     column, so it is replaced by the drawer navigation */
+  .sidebar-col,
+  .app-layout > .sidebar { display: none; }
+
+  .top-navbar {
+    margin: 10px 12px 16px;
+    padding: 10px 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .brand-logo { flex: 1 1 140px; }
+  .nav-actions { flex: 0 0 auto; gap: 10px; }
+
+  /* search drops to its own full-width row under the header row */
+  .search-bar-nav {
+    order: 10;
+    flex: 1 0 100%;
+    margin-top: 2px;
+  }
+  .search-bar-nav input,
+  .search-bar-nav input:focus { width: 100%; }
+  .search-bar-nav .search-icon { left: 14px; }
+
+  .hero-section   { grid-template-columns: minmax(0, 1fr); text-align: center; }
+  .hero-buttons   { justify-content: center; flex-wrap: wrap; }
+  .hero-subtitle  { margin: 0 auto 28px auto; }
+  .hero-badge-tag { display: none; }
+  .hero-content   { margin-bottom: 0; }
+  .home-container { padding: 0 14px 40px; }
+
+  .students-grid    { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats-grid       { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .performers-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .departments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* two-column page sections collapse to one */
+  .rp-split { grid-template-columns: minmax(0, 1fr) !important; }
+  .rp-row   { flex-wrap: wrap; gap: 10px; }
+
+  .edutrack-footer { flex-direction: column; align-items: flex-start; gap: 14px; text-align: left; }
+  .footer-links    { flex-wrap: wrap; gap: 12px 20px; }
+
+  .glass-table th, .glass-table td { padding: 12px 14px; }
+}
+
+/* ---- 700px: two card columns become tight, and filters stack ---- */
+@media (max-width: 700px) {
+  .performers-grid  { grid-template-columns: minmax(0, 1fr); }
+  .filter-bar      { gap: 10px; }
+  .search-input-group { min-width: 0; flex: 1 1 100%; }
+  .select-filter   { flex: 1 1 auto; min-width: 0; }
+  .table-responsive, #attSessions { -webkit-overflow-scrolling: touch; }
+  .attendance-overview { justify-content: center; gap: 20px; }
+  .profile-tabs { gap: 4px; padding: 5px; }
+  .profile-tab  { font-size: 0.76rem; padding: 10px 6px; }
+}
+
+/* ---- 600px: phone layout ---- */
+@media (max-width: 600px) {
+  .students-grid    { grid-template-columns: minmax(0, 1fr); }
+  .departments-grid { grid-template-columns: minmax(0, 1fr); }
+  .stats-grid       { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rp-tiles         { grid-template-columns: minmax(0, 1fr) !important; }
+
+  .hero-title     { font-size: clamp(1.5rem, 7vw, 1.9rem); letter-spacing: -0.6px; }
+  .hero-subtitle  { font-size: 0.94rem; }
+  .hero-buttons   { gap: 10px; }
+  .btn-primary, .btn-secondary { padding: 12px 20px; }
+
+  .section-title  { font-size: 1.15rem; }
+  .section-subtitle { font-size: 0.78rem; }
+
+  .stat-card, .performer-card, .dept-card, .student-card { padding: 16px; }
+  .stat-value     { font-size: 1.45rem; }
+  .stat-label     { font-size: 0.8rem; }
+  .stat-subtitle  { display: none; }
+  .sparkline-svg  { width: 72px; height: 24px; }
+  .score-circle-val small { font-size: 0.68rem; }
+
+  /* the "Attendance" caption inside a student card is an inline 0.65rem;
+     lift it just enough to stay legible on a phone */
+  .student-stats-row [style*="font-size:0.65rem"] { font-size: 0.74rem !important; }
+  .student-stats-row [style*="font-size:0.8rem"]  { font-size: 0.86rem !important; }
+  .notify-badge   { font-size: 0.7rem; min-width: 18px; height: 18px; }
+
+  .top-navbar     { margin: 8px 10px 14px; padding: 10px; }
+  .brand-icon-img { width: 30px; height: 30px; }
+  .user-profile-nav { padding: 4px; }
+  .user-profile-nav img,
+  .user-profile-nav .admin-avatar-icon { width: 30px; height: 30px; }
+  .btn-icon-notify { width: 36px; height: 36px; }
+
+  .edutrack-footer { margin-top: 28px; padding: 20px 14px; font-size: 0.78rem; }
+
+  .modal-overlay { padding: 14px; align-items: flex-end; }
+  .modal-card   { padding: 22px 18px; border-radius: 18px; max-height: 88vh; overflow-y: auto; }
+  .modal-close-btn { top: 12px; right: 12px; width: 34px; height: 34px; }
+
+  .pagination-container { flex-direction: column; align-items: stretch; text-align: center; }
+  .pagination-controls { justify-content: center; flex-wrap: wrap; }
+
+  .rp-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  /* the notification panel is pinned edge to edge so it can never
+     inherit an offset that pushes it off a narrow screen */
+  .notif-panel {
+    left: 10px !important;
+    right: 10px !important;
+    width: auto;
+    max-width: none;
+    max-height: 70vh;
+  }
+  .notif-btn { width: 36px; height: 36px; }
+  .notif-composer textarea { font-size: 0.85rem; }
+  .notif-send { padding: 10px 16px; }
+}
+
+/* ---- 480px: small phone ---- */
+@media (max-width: 480px) {
+  .stats-grid    { grid-template-columns: minmax(0, 1fr); }
+  .rp-tiles      { grid-template-columns: minmax(0, 1fr) !important; }
+
+  .hero-title     { font-size: clamp(1.35rem, 7.4vw, 1.6rem); }
+  .hero-pill-badge { font-size: 0.75rem; padding: 5px 13px; }
+  .hero-buttons   { flex-direction: column; align-items: stretch; }
+  .hero-buttons .btn-primary,
+  .hero-buttons .btn-secondary { justify-content: center; }
+
+  .brand-name     { font-size: 0.86rem; }
+  .stat-value     { font-size: 1.6rem; }
+  .stat-footer    { gap: 8px; }
+  .stat-growth    { font-size: 0.7rem; }
+
+  .section-header { flex-wrap: wrap; gap: 10px; }
+  .btn-view-all   { padding: 8px 14px; }
+
+  .select-filter  { width: 100%; flex: 1 1 100%; }
+  .view-toggle-btns { width: 100%; }
+  .btn-toggle-view { flex: 1; padding: 10px; }
+  .page-btn       { min-width: 38px; height: 38px; }
+
+  .performer-identity { gap: 10px; }
+  .performer-avatar   { width: 50px; height: 50px; }
+  .performer-meta h3  { font-size: 0.98rem; }
+  .score-circle-wrap, .score-circle-svg { width: 54px; height: 54px; }
+  .score-circle-val   { font-size: 0.74rem; }
+  .score-circle-val small { font-size: 0.68rem; }
+
+  .notif-item-info .sub { font-size: 0.74rem; }
+  .notif-head .notif-date { font-size: 0.7rem; }
+  .sidebar-promo-card p { font-size: 0.78rem; }
+
+  .center-toast { padding: 26px 20px; border-radius: 20px; }
+  .center-toast-icon { width: 64px; height: 64px; margin-bottom: 14px; }
+  .center-toast-icon svg { width: 32px; height: 32px; }
+  .center-toast h3 { font-size: 1.15rem; }
+  .center-toast p  { font-size: 0.84rem; }
+
+  .glass-table th, .glass-table td { padding: 10px 12px; font-size: 0.8rem; }
+}
+
+/* ---- 380px and below: smallest supported phones ---- */
+@media (max-width: 380px) {
+  .top-navbar     { margin: 8px 8px 12px; padding: 9px 8px; gap: 8px; }
+  .app-layout, .home-container { margin-left: 10px; margin-right: 10px; }
+  .home-container { padding-left: 0; padding-right: 0; }
+  .nav-actions    { gap: 8px; }
+  .brand-name     { font-size: 0.78rem; }
+  .hero-title     { font-size: 1.3rem; }
+  .stat-card, .performer-card, .dept-card, .student-card { padding: 14px; }
+  .performer-top-row { gap: 10px; }
+  .modal-overlay  { padding: 10px; }
+  .sf-actions     { flex-direction: column; }
+  .sf-actions button { width: 100%; justify-content: center; }
+}
+
+
+/* ---- touch-friendly interactive elements on small screens ---- */
+@media (hover: none), (max-width: 900px) {
+  .btn-primary,
+  .btn-secondary { min-height: 44px; }
+
+  .card-options-btn { padding: 8px; border-radius: 10px; }
+  .card-action-link { padding: 14px 0 4px; }
+
+  .notif-refresh { padding: 9px; }
+  .notif-btn     { width: 38px; height: 38px; }
+  .page-btn      { min-width: 38px; height: 38px; }
+  .stat-arrow-btn{ width: 34px; height: 34px; }
+  .btn-icon-notify { width: 40px; height: 40px; }
+  .modal-close-btn { width: 34px; height: 34px; }
+  .btn-toggle-view { padding: 10px 14px; }
+  .view-doc-btn, .edit-btn { padding: 9px 14px; }
+  .camera-btn { width: 40px; height: 40px; }
+
+  .att-choice {
+    padding: 10px 14px !important;
+    font-size: 0.8rem !important;
+    min-height: 40px;
+  }
+
+  .btn-del-session { padding: 9px 13px !important; font-size: 0.76rem !important; }
+  .notif-send { min-height: 42px; }
+  .notif-composer textarea { min-height: 80px; }
+  .sf-actions button,
+  #studentForm .sf-actions button { min-height: 46px; }
+  #studentForm input,
+  #studentForm select { min-height: 46px; }
+  .select-filter { min-height: 44px; }
+  .search-input-group input { min-height: 44px; }
+
+  .footer-links a { padding: 6px 2px; display: inline-block; }
+  .footer-socials a { padding: 8px; }
+}
+
+/* active/tap feedback for touch devices */
+@media (hover: none) {
+  .nav-link:active,
+  .sidebar-item:active,
+  .btn-primary:active,
+  .btn-secondary:active,
+  .card-action-link:active,
+  .btn-view-all:active,
+  .user-profile-nav:active,
+  .btn-toggle-view:active,
+  .page-btn:active,
+  .notif-btn:active { transform: scale(0.97); }
+
+  .student-card:hover,
+  .performer-card:hover,
+  .stat-card:hover,
+  .dept-card:hover,
+  .glass-panel:hover { transform: none; }
+}
+
+/* pointer/keyboard focus is always visible */
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:focus-visible,
+  .sidebar-item:focus-visible,
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  .card-action-link:focus-visible,
+  .btn-view-all:focus-visible,
+  .btn-toggle-view:focus-visible,
+  .page-btn:focus-visible,
+  .user-profile-nav:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
 }

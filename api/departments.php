@@ -8,6 +8,7 @@ try {
     $sql = "
         SELECT 
             d.dept_key AS id,
+            d.id AS db_id,
             d.name,
             d.code,
             d.icon,
@@ -41,6 +42,7 @@ try {
 
             $result[] = [
                 'id' => $r['id'],
+                'dbId' => (int)$r['db_id'],
                 'name' => $r['name'],
                 'code' => $r['code'],
                 'icon' => $r['icon'],

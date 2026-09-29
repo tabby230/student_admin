@@ -19,7 +19,6 @@
     container.dataset.moonReady = '1';
 
     var src = container.getAttribute('data-moon-src') || DEFAULT_SRC;
-    var hint = container.querySelector('.moon-widget-hint');
     var loader = container.querySelector('.moon-widget-loader');
     var fallback = container.querySelector('.moon-widget-fallback');
 
@@ -34,7 +33,6 @@
 
     function showFallback() {
       if (loader) loader.hidden = true;
-      if (hint) hint.hidden = true;
       if (fallback) fallback.hidden = false;
       container.classList.add('is-fallback');
     }

@@ -157,8 +157,8 @@ function buildProfileRecord($p) {
         'section'           => isset($p['section']) ? $p['section'] : null,
         'year'              => (int)$p['year'],
         'semester'          => $curSem,
-        'photo'             => isset($p['photo']) ? $p['photo'] : null,
-        'avatar'            => isset($p['avatar']) ? $p['avatar'] : null,
+        'photo'             => (isset($p['photo']) && $p['photo'] !== '') ? $p['photo'] : (isset($p['avatar']) ? $p['avatar'] : null),
+        'avatar'            => (isset($p['photo']) && $p['photo'] !== '') ? $p['photo'] : (isset($p['avatar']) ? $p['avatar'] : null),
         'email'             => isset($p['email']) ? $p['email'] : null,
         'phone'             => isset($p['phone']) ? $p['phone'] : null,
         'dob'               => isset($p['dob']) ? $p['dob'] : null,
@@ -319,8 +319,10 @@ try {
         'section'         => $row['section'] ?? null,
         'year'            => (int)$row['year'],
         'semester'        => (int)$row['semester'],
-        'photo'           => $row['photo'] ?? null,
-        'avatar'          => $row['avatar'] ?? null,
+        // An uploaded photo always wins; avatar is only the fallback.
+        // Same COALESCE(NULLIF(photo,''), avatar) as students.php/top-performers.php.
+        'photo'           => ($row['photo'] ?? '') !== '' ? $row['photo'] : ($row['avatar'] ?? null),
+        'avatar'          => ($row['photo'] ?? '') !== '' ? $row['photo'] : ($row['avatar'] ?? null),
         'email'           => $row['email'] ?? null,
         'phone'           => $row['phone'] ?? null,
         'dob'             => $row['dob'] ?? null,

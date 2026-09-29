@@ -54,9 +54,12 @@ function studentRequiredFields() {
  *
  * @param string $field JSON field name
  * @param mixed  $value raw value from the request
+ * @param array  $context optional. For 'rollNo', `currentRollNo` is the value
+ *                        already stored on the row, which is allowed to survive
+ *                        an edit untouched (see the case below).
  * @return mixed  value ready to bind
  */
-function validateStudentField($field, $value) {
+function validateStudentField($field, $value, array $context = []) {
     $isText = is_string($value);
     $value  = $isText ? trim($value) : $value;
 
@@ -72,8 +75,16 @@ function validateStudentField($field, $value) {
         case 'rollNo':
             if ($empty) sendJsonError('rollNo is required.', 400, ['field' => 'rollNo']);
             $value = strtoupper((string)$value);
-            if (!preg_match('/^[A-Z0-9\-\/]{2,25}$/', $value)) {
-                sendJsonError('rollNo may contain letters, digits, hyphen and slash only (e.g. 22CS050).', 400, ['field' => 'rollNo']);
+            // Roll numbers are digits only. A row written before this rule kept
+            // an alphanumeric number (22CS001); sending that exact stored value
+            // back unchanged is accepted so editing other fields is not blocked.
+            // Anything else must be numeric.
+            $currentRollNo = isset($context['currentRollNo'])
+                ? strtoupper(trim((string)$context['currentRollNo']))
+                : '';
+            if ($currentRollNo !== '' && $value === $currentRollNo) return $value;
+            if (!preg_match('/^[0-9]{2,25}$/', $value)) {
+                sendJsonError('Roll number must contain digits only (e.g. 22001).', 400, ['field' => 'rollNo']);
             }
             return $value;
 

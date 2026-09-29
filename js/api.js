@@ -5,7 +5,7 @@
  */
 
 const API = {
-  // Base endpoint
+  // Base endpoint - relative path works for localhost
   baseUrl: 'api/',
 
   async request(endpoint, options = {}) {
@@ -116,10 +116,15 @@ const API = {
     });
   },
 
-  // 11. Upload a student profile photo (multipart/form-data)
-  async uploadStudentPhoto(id, file) {
+  // 11. Upload a student profile photo (multipart/form-data). `idOrRoll` may be
+  //     a numeric id or a roll number; a brand new student has no id yet, so it
+  //     is addressed by roll number until the next edit.
+  async uploadStudentPhoto(idOrRoll, file) {
+    const key = String(idOrRoll === null || idOrRoll === undefined ? '' : idOrRoll).trim();
+    if (!key) throw new Error('A student id or roll number is required to save a photo.');
     const formData = new FormData();
-    formData.append('id', id);
+    if (/^\d+$/.test(key)) formData.append('id', Number(key));
+    else formData.append('roll', key.toUpperCase());
     formData.append('photo', file);
     return this.request('student-photo.php', {
       method: 'POST',
@@ -231,6 +236,18 @@ const API = {
     const q = new URLSearchParams({ withSubjects: '1' });
     if (semesterId > 0) q.set('semesterId', String(semesterId));
     return this.request('semesters.php?' + q.toString());
+  },
+
+  // 22. Students marked absent, for the notification bell. Defaults to today;
+  //     the endpoint falls back to the most recent dated session and says so
+  //     via `isFallback`, because the database has no session for today until
+  //     an admin marks one.
+  async getAbsentees(filters = {}) {
+    const q = new URLSearchParams();
+    if (filters.date) q.set('date', filters.date);
+    if (filters.semesterId) q.set('semesterId', String(filters.semesterId));
+    if (filters.departmentId) q.set('departmentId', String(filters.departmentId));
+    return this.request('absentees.php' + (q.toString() ? '?' + q.toString() : ''));
   }
 };
 

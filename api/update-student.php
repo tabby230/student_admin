@@ -62,9 +62,13 @@ try {
     $sets   = [];
     $params = [];
 
+    // Lets the roll number keep an alphanumeric value written before the
+    // digits-only rule, provided the admin did not actually change it.
+    $fieldContext = ['currentRollNo' => $current['roll_no']];
+
     foreach ($map as $field => $column) {
         if (!array_key_exists($field, $input)) continue;
-        $params[$field] = validateStudentField($field, $input[$field]);
+        $params[$field] = validateStudentField($field, $input[$field], $fieldContext);
         $sets[] = "`$column` = :$field";
     }
 

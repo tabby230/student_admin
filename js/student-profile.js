@@ -201,7 +201,7 @@
 
   function buildLeftColumn() {
     const s = student;
-    const photoSrc = s.avatar || s.photo;
+    const photoSrc = s.photo || s.avatar;
     const avatarHtml = photoSrc
       ? `<div class="initials-avatar">${esc(initials(s.name))}</div><img src="${esc(photoSrc)}" alt="${esc(s.name)}" class="profile-avatar-img" onerror="this.remove();">`
       : `<div class="initials-avatar">${esc(initials(s.name))}</div>`;
@@ -884,37 +884,19 @@
     if (photoInputBound || !input) return;
     photoInputBound = true;
 
-    input.addEventListener('change', async () => {
+    input.addEventListener('change', () => {
       const file = input.files && input.files[0];
+      input.value = '';
       if (!file) return;
-
-      if (file.size > 2 * 1024 * 1024) {
-        showToast('Photo must be 2MB or smaller.', 'error');
-        input.value = '';
-        return;
-      }
-
-      const ring = document.getElementById('avatarRing');
-      const originalHtml = ring ? ring.innerHTML : '';
-      const initialsFallback = `<div class="initials-avatar">${esc(initials(student.name))}</div>`;
-
-      // Instant preview
-      const previewUrl = URL.createObjectURL(file);
-      if (ring) ring.innerHTML = initialsFallback + `<img src="${previewUrl}" alt="Preview" class="profile-avatar-img" onerror="this.remove();">`;
-
-      try {
-        const res = await API.uploadStudentPhoto(studentId, file);
-        student.photo = res.photo;
-        // Re-render just the avatar with the persisted URL
-        if (ring) ring.innerHTML = initialsFallback + `<img src="${esc(res.photo)}" alt="${esc(student.name)}" class="profile-avatar-img" onerror="this.remove();">`;
-        showToast(res.message || 'Photo updated successfully.', 'success');
-      } catch (err) {
-        ring.innerHTML = originalHtml;
-        showToast(err.message || 'Photo upload failed.', 'error');
-      } finally {
-        URL.revokeObjectURL(previewUrl);
-        input.value = '';
-      }
+      openPhotoCropper(studentId, file, (photoUrl) => {
+        student.photo = photoUrl;
+        student.avatar = photoUrl;
+        const ring = document.getElementById('avatarRing');
+        if (ring) {
+          ring.innerHTML = `<div class="initials-avatar">${esc(initials(student.name))}</div><img src="${esc(photoUrl)}?t=${Date.now()}" alt="${esc(student.name)}" class="profile-avatar-img" onerror="this.remove();">`;
+        }
+        showToast('Photo updated successfully.', 'success');
+      });
     });
   }
 

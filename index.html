@@ -298,7 +298,7 @@
 
   <!-- Scripts -->
   <script src="js/api.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=5"></script>
   <script src="js/shooting-star.js"></script>
   <script>
     async function initHomePage() {
@@ -334,7 +334,7 @@
               <div class="performer-top-row">
                 <div class="performer-identity">
                   <div class="performer-avatar-wrap">
-                    <img src="${p.avatar}" alt="${p.name}" class="performer-avatar" onerror="this.src='assets/images/avatar-rithik.png'">
+                    <img src="${escapeAttr(resolveStudentImage(p) || 'assets/images/avatar-rithik.png')}" alt="${escapeAttr(p.name)}" class="performer-avatar" onerror="this.src='assets/images/avatar-rithik.png'">
                     <span class="rank-pill rank-${p.rank}">${p.rank}</span>
                   </div>
                   <div class="performer-meta">
